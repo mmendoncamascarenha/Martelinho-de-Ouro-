@@ -1,0 +1,23 @@
+{
+  "name": "Martelinhodeouro",
+  "version": "1.0.0",
+  "description": "Projeto da UC-12; um sistema de Ordem de Serviço foi desenvolvido para oficinas especializadas em Martelinho de Ouro, permitindo um gerenciamento eficiente dos serviços prestados.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmendoncamascarenha/Martelinho-de-Ouro-.git"
+  },
+  "author": "Murillo Mendonça Mascarenha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mmendoncamascarenha/Martelinho-de-Ouro-/issues"
+  },
+  "homepage": "https://github.com/mmendoncamascarenha/Martelinho-de-Ouro-#readme",
+  "devDependencies": {
+    "electron": "^34.2.0"
+  }
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="bt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Título que será exibido na janela-->
+    <title>Martelinho de Ouro</title>
+    
+    <!--BOOTSTRAP-->
+    <link rel ="stylesheet" href="../public/css/bootstrap.min.css">
+    <!--CSS personalizado-->
+    <link rel="stylesheet" href="../public/css/style.css">
+    <!-- Impedir a execução de scripts externos ou não autorizados-->
+     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+</head>
+<body>
+    <div class="container button">
+        <img src="../public/img/register.png" alt="Cadastro" title="Cadastro dos Clientes">
+        <img src="../public/img/tools.png" alt="Conserto" title="a emissão de OS">
+        <img src="../public/img/carrinho.png" alt="Cadastro" title="Cadastro do Veículo">
+    </div>
+
+    <footer>
+        <p id="dataAtual"></p>
+    </footer>
+
+    <!-- Bootstrap-->
+     <script src="../public/js/bootstrap.min.js"></script>
+     <script src="../public/js/script.js"></script>
+
+     <script>
+        // Atualizar automaticamente o data (footer - copyright)  
+        let dataAtual = document.getElementById("copyrightYear");
+        let anoAtual = new Date().getFullYear();
+        dataAtual.textContent = anoAtual;
+    </script>
+</body>
+</html>
