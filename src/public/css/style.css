@@ -12,6 +12,15 @@
 
 
 }
+/* Botão RESET*/
+#btnReset{
+    width: 45px;
+    height: 50px;
+    background-image: url('../img/vassoura1.png');
+    border: none;
+    cursor: pointer;
+}
+
 
 footer {
     background-color: #122629;
