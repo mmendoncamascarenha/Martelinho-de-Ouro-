@@ -15,9 +15,9 @@
 </head>
 <body>
     <div class="container button">
-        <img src="../public/img/register.png" alt="Cadastro" title="Cadastro dos Clientes">
-        <img src="../public/img/tools.png" alt="Conserto" title="a emissão de OS">
-        <img src="../public/img/carrinho.png" alt="Cadastro" title="Cadastro do Veículo">
+        <img src="../public/img/register.png" alt="Cadastro" title="Cadastro dos Clientes" onclick="client()">
+        <img src="../public/img/tools.png" alt="Conserto" title="a emissão de OS" onclick="os()">
+        <img src="../public/img/carrinho.png" alt="Cadastro" title="Cadastro do Veículo" onclick="carro()">
     </div>
 
     <footer>
@@ -30,9 +30,10 @@
 
      <script>
         // Atualizar automaticamente o data (footer - copyright)  
-        let dataAtual = document.getElementById("copyrightYear");
+        let dataAtual = document.getElementById("dataAtual"); // Corrigido o ID
         let anoAtual = new Date().getFullYear();
         dataAtual.textContent = anoAtual;
     </script>
+    <script src="renderer.js"></script>
 </body>
 </html>

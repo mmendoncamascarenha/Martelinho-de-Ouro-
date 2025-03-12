@@ -23,7 +23,7 @@ let dados = {
 //***************************************************Exibindo o ano no HTML (no rodapé)********************************************
 let ano = document.getElementById('copyrightYear');
 if (ano) {
-    ano.innerHTML = dados.anoAtual;
+   ano.innerHTML = dados.anoAtual;
 }
 
 //***************************************************Exibindo a data no HTML (no rodapé)********************************************

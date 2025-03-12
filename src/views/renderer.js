@@ -18,3 +18,6 @@ function os() {
     //uso do api(autorizanda no preload.js)
     api.osWindow()
 }
+function carro() {
+    api.carroWindow()
+}

@@ -1,11 +1,12 @@
-console.log("Processo principal")
-const { app, BrowserWindow, nativeTheme, Menu, ipcMain } = require('electron')
-const path = require('node:path')
+console.log("Processo principal");
+
+const { app, BrowserWindow, nativeTheme, Menu, ipcMain } = require('electron');
+const path = require('node:path');
 
 // Janela Principal
-let win
+let win;
 const createWindow = () => {
-  nativeTheme.themeSource = 'dark' // (dark ou light)
+  nativeTheme.themeSource = 'dark'; // Tema padrão
   win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -13,26 +14,17 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
-  })
+  });
   
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
-  win.loadFile('./src/views/index.html')
-}
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  win.loadFile('./src/views/index.html');
+};
 
-// Recebimento dos pedidos do renderizador para abertura de janelas (botões)
-ipcMain.on('client-window', () => {
-  clientWindow()
-})
-
-ipcMain.on('os-window', () => {
-  osWindow()
-})
-
-// Janela sobre
+// Janela Sobre
 function aboutWindow() {
-  nativeTheme.themeSource = 'light'
-  const main = BrowserWindow.getFocusedWindow()
-  let about
+  nativeTheme.themeSource = 'light';
+  const main = BrowserWindow.getFocusedWindow();
+  let about;
   if (main) {
     about = new BrowserWindow({
       width: 360,
@@ -41,16 +33,16 @@ function aboutWindow() {
       minimizable: false,
       parent: main,
       modal: true
-    })
+    });
   }
-  about.loadFile('./src/views/sobre.html')
+  about.loadFile('./src/views/sobre.html');
 }
 
 // Janela Clientes
-let client
+let client;
 function clientWindow() {
-  nativeTheme.themeSource = 'light'
-  const main = BrowserWindow.getFocusedWindow()
+  nativeTheme.themeSource = 'light';
+  const main = BrowserWindow.getFocusedWindow();
   if (main) {
     client = new BrowserWindow({
       width: 1010,
@@ -58,17 +50,17 @@ function clientWindow() {
       resizable: false,
       parent: main,
       modal: true
-    })
+    });
   }
-  client.loadFile('.src/views/clientes.html')
-  client.center()
+  client.loadFile('./src/views/clientes.html'); // Nome atualizado
+  client.center();
 }
 
 // Janela OS
-let os
+let os;
 function osWindow() {
-  nativeTheme.themeSource = 'light'
-  const main = BrowserWindow.getFocusedWindow()
+  nativeTheme.themeSource = 'light';
+  const main = BrowserWindow.getFocusedWindow();
   if (main) {
     os = new BrowserWindow({
       width: 1010,
@@ -76,29 +68,48 @@ function osWindow() {
       resizable: false,
       parent: main,
       modal: true
-    })
+    });
   }
-  os.loadFile('./src/views/OS.html')
-  os.center()
+  os.loadFile('./src/views/OS.html'); // Nome atualizado
+  os.center();
+}
+
+// Janela CARRO
+let carro;
+function carroWindow() {
+  nativeTheme.themeSource = 'light';
+  const main = BrowserWindow.getFocusedWindow();
+  if (main) {
+    carro = new BrowserWindow({
+      width: 1010,
+      height: 720,
+      resizable: false,
+      parent: main,
+      modal: true
+    });
+  }
+  carro.loadFile('./src/views/carros.html'); // Nome atualizado
+  carro.center();
 }
 
 // Iniciar a aplicação
 app.whenReady().then(() => {
-  createWindow()
+  createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
+      createWindow();
     }
-  })
-  app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-      app.quit()
-    }
-  })
-})
+  });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
 
 // Reduzir logs não críticos
-app.commandLine.appendSwitch('log-level', '3')
+app.commandLine.appendSwitch('log-level', '3');
 
 // Template do menu
 const template = [
@@ -137,4 +148,17 @@ const template = [
       { label: 'Sobre', click: () => aboutWindow() }
     ]
   }
-]
+];
+
+// Recebimento dos pedidos do renderizador para abertura de janelas (botões)
+ipcMain.on('client-window', () => {
+  clientWindow();
+});
+
+ipcMain.on('os-window', () => {
+  osWindow();
+});
+
+ipcMain.on('carro-window', () => {
+  carroWindow();
+});

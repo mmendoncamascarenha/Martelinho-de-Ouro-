@@ -23,7 +23,7 @@
             <div class="col-md-4">
                 <button type="button" class="btn btn-primary" id="btnRead" onclick="searchClient()">Buscar</button>
             </div>
-
+            
             <hr class="my-4 border border-primary border-1">
 
             <!-- Nome do Cliente -->
@@ -41,19 +41,19 @@
             <!-- E-mail -->
             <div class="col-md-6">
                 <label for="inputEmailClient" class="form-label">Email</label>
-                <input type="text" class="form-control" id="inputEmailClient" spellcheck="false" maxlength="15">
+                <input type="email" class="form-control" id="inputEmailClient" spellcheck="false" maxlength="30">
             </div>
 
             <!-- Telefone -->
             <div class="col-md-3">
                 <label for="inputTelefoneClient" class="form-label">Telefone</label>
-                <input type="text" class="form-control" id="inputTelefoneClient" spellcheck="false" maxlength="15">
+                <input type="text" class="form-control" id="inputTelefoneClient" spellcheck="false" maxlength="15" required>
             </div>
 
             <!-- CEP -->
             <div class="col-md-2">
                 <label for="inputCEPClient" class="form-label">CEP</label>
-                <input type="text" class="form-control" id="inputCEPClient" spellcheck="false" maxlength="9" required>
+                <input type="text" class="form-control" id="inputCEPClient" spellcheck="false" maxlength="9" required onblur="buscarCEP()">
             </div>
 
             <!-- Logradouro -->
@@ -76,8 +76,8 @@
 
             <!-- Bairro -->
             <div class="col-md-5">
-                <label for="inputburghClient" class="form-label">Bairro</label>
-                <input type="text" class="form-control" id="inputburghClient" spellcheck="false" maxlength="30" required>
+                <label for="inputNeighborhoodClient" class="form-label">Bairro</label>
+                <input type="text" class="form-control" id="inputNeighborhoodClient" spellcheck="false" maxlength="30" required>
             </div>
 
             <!-- Cidade -->
@@ -89,7 +89,7 @@
             <!-- UF -->
             <div class="col-md-3">
                 <label for="uf" class="form-label">Unidade Federativa</label>
-                <select class="form-select" id="uf" name="uf">
+                <select class="form-select" id="uf" name="uf" required>
                     <option value="">Selecione uma UF</option>
                     <option value="SP">SP - São Paulo</option>
                     <option value="RJ">RJ - Rio de Janeiro</option>
@@ -103,7 +103,7 @@
                 <button type="submit" class="btn btn-success" id="btnCreate">Adicionar</button>
                 <button type="submit" class="btn btn-warning" id="btnUpdate">Editar</button>
                 <button type="button" class="btn btn-danger" id="btnDelete">Excluir</button>
-                <button type="reset" class="btn btn-secondary" id="btnReset" onclick="resetform()">Resetar</button>
+                <button type="reset" class="btn btn-secondary" id="btnReset" onclick="resetForm()"></button>
             </div>
         </form>
     </div>
@@ -111,9 +111,11 @@
     <!-- Bootstrap -->
     <script src="../public/js/bootstrap.min.js"></script>
     <script>
-        function resetform() {
+        function resetForm() {
             document.getElementById("frmClient").reset();
         }
+        
     </script>
+     <script src="rendererCliente.js"></script>
 </body>
 </html>

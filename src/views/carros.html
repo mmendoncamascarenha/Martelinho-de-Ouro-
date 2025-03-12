@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carros</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="../public/css/bootstrap.min.css">
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="../public/css/style.css">
+    <!-- Impedir execução de scripts externos ou não autorizados -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+</head>
+<body>
+    <div class="container">
+        <form class="mt-2 row g-3">
+
+            <!-- Placa -->
+            <div class="col-md-4">
+                <label class="form-label">Placa</label>
+                <input type="text" class="form-control" id="inputPlaca" required maxlength="7">
+            </div>
+
+            <!-- Marca -->
+            <div class="col-md-4">
+                <label class="form-label">Marca</label>
+                <input type="text" class="form-control" id="inputMarca" required>
+            </div>
+
+            <!-- Modelo -->
+            <div class="col-md-4">
+                <label class="form-label">Modelo</label>
+                <input type="text" class="form-control" id="inputModelo" required>
+            </div>
+
+            <!-- Ano -->
+            <div class="col-md-3">
+                <label class="form-label">Ano</label>
+                <input type="number" class="form-control" id="inputAno" required min="1900" max="2025">
+            </div>
+
+            <!-- Cor -->
+            <div class="col-md-3">
+                <label class="form-label">Cor</label>
+                <input type="text" class="form-control" id="inputCor" required>
+            </div>
+
+            <!-- Descrição do Conserto -->
+            <div class="col-md-12">
+                <label class="form-label">Descrição do Conserto</label>
+                <textarea class="form-control" id="inputDescricao" rows="3" required></textarea>
+            </div>
+
+            <!-- Botões -->
+            <div class="d-flex justify-content-center gap-1 mt-3">
+                <button type="button" class="btn btn-success">Cadastrar</button>
+                <button type="button" class="btn btn-primary">Buscar</button>
+                <button type="button" class="btn btn-warning">Editar</button>
+                <button type="button" class="btn btn-danger">Excluir</button>
+            </div>
+        </form>
+    </div>
+    
+</body>
+</html>
