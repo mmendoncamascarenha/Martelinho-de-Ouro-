@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/mmendoncamascarenha/Martelinho-de-Ouro-#readme",
   "devDependencies": {
-    "electron": "^34.3.2"
+    "electron": "^34.3.3"
   }
 }

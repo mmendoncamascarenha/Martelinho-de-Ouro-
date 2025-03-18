@@ -22,7 +22,7 @@ const createWindow = () => {
 
 // Janela Sobre
 function aboutWindow() {
-  nativeTheme.themeSource = 'light';
+  nativeTheme.themeSource = 'dark';
   const main = BrowserWindow.getFocusedWindow();
   let about;
   if (main) {
@@ -41,7 +41,7 @@ function aboutWindow() {
 // Janela Clientes
 let client;
 function clientWindow() {
-  nativeTheme.themeSource = 'light';
+  nativeTheme.themeSource = 'dark';
   const main = BrowserWindow.getFocusedWindow();
   if (main) {
     client = new BrowserWindow({
@@ -59,7 +59,7 @@ function clientWindow() {
 // Janela OS
 let os;
 function osWindow() {
-  nativeTheme.themeSource = 'light';
+  nativeTheme.themeSource = 'dark';
   const main = BrowserWindow.getFocusedWindow();
   if (main) {
     os = new BrowserWindow({
@@ -77,7 +77,7 @@ function osWindow() {
 // Janela CARRO
 let carro;
 function carroWindow() {
-  nativeTheme.themeSource = 'light';
+  nativeTheme.themeSource = 'dark';
   const main = BrowserWindow.getFocusedWindow();
   if (main) {
     carro = new BrowserWindow({
@@ -116,7 +116,7 @@ const template = [
   {
     label: 'Cadastro',
     submenu: [
-      { label: 'Cadastro do Veículo' },
+      { label: 'Cadastro do Veículo', click: () => carroWindow() },
       { label: 'Cadastro dos Clientes', click: () => clientWindow() },
       { label: 'OS', click: () => osWindow() },
       { type: 'separator' },
