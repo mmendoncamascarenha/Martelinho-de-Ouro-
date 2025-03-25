@@ -1,7 +1,18 @@
 console.log("Processo principal");
 
+
 const { app, BrowserWindow, nativeTheme, Menu, ipcMain } = require('electron');
+
+// esta linha esta relacionada ao preload.js
 const path = require('node:path');
+
+// importação dos metodos conectar e desconectar 
+const { conectar, desconectar } = require('./database')
+
+// importação dos Schema Clientes da camada model
+const clientModel = require('./src/models/Clientes.js') 
+
+const clientes = require('./src/models/Clientes.js')
 
 // Janela Principal
 let win;
@@ -11,6 +22,7 @@ const createWindow = () => {
     width: 800,
     height: 600,
     resizable: false,
+
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -47,15 +59,18 @@ function clientWindow() {
     client = new BrowserWindow({
       width: 1010,
       height: 720,
-      resizable: false,
+      //autoHideMenuBar:
+      //resizable: false,
       parent: main,
-      modal: true
+      modal: true,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js')
+      }
     });
   }
   client.loadFile('./src/views/clientes.html'); // Nome atualizado
   client.center();
 }
-
 // Janela OS
 let os;
 function osWindow() {
@@ -162,3 +177,39 @@ ipcMain.on('os-window', () => {
 ipcMain.on('carro-window', () => {
   carroWindow();
 });
+
+
+// =======================================================================================================================================================
+// == Clientes -  CRUD Create
+// recebimento do objeto que contem os dados do cliente
+ipcMain.on('new-client', async (event, client) => {
+  // importante ! teste de recebimento dos dados do cliente
+  console.log(client)
+  // cadastrar a estrutura de dados no banco MongoDB
+  try {
+    // criar uma nova de estrutura de dados usando a classe modelo. Atenção !
+    // Os atributos precisam ser identicos ao modelo de dados cliente.js e os valores
+    // sao definidos pelo conteudo do objeto cliente
+    const newClient = new clientModel({
+      nomeCliente: client.nameCli,
+      cpfCliente: client.cpfCli,
+      emailCliente: client.emailCli,
+      foneCliente: client.phoneCli,
+      cepCliente: client.cepCli,
+      logradouroCliente: client.addressCli,
+      numeroCliente: client.numberCli,
+      complementoCliente: client.complementCli,
+      bairroCliente: client.neighborhoodCli,
+      cidadeCliente: client.cityCli,
+      ufCliente: client.ufCli
+
+    })
+    // salver os dados do cliente no banco de dados
+    await newClient.save()
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+// _FIM CLientes - CRUD Create 
+//========================================================================================================================================================

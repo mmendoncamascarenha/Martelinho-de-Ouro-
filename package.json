@@ -19,5 +19,8 @@
   "homepage": "https://github.com/mmendoncamascarenha/Martelinho-de-Ouro-#readme",
   "devDependencies": {
     "electron": "^34.3.3"
+  },
+  "dependencies": {
+    "mongoose": "^8.13.0"
   }
 }
