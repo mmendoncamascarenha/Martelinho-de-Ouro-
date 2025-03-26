@@ -7,10 +7,10 @@ const { app, BrowserWindow, nativeTheme, Menu, ipcMain } = require('electron');
 const path = require('node:path');
 
 // importação dos metodos conectar e desconectar 
-const { conectar, desconectar } = require('./database')
+const { conectar, desconectar } = require('./database.js')
 
 // importação dos Schema Clientes da camada model
-const clientModel = require('./src/models/Clientes.js') 
+const clientModel = require('./src/models/Clientes.js')
 
 const clientes = require('./src/models/Clientes.js')
 
@@ -27,7 +27,7 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js')
     }
   });
-  
+
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
   win.loadFile('./src/views/index.html');
 };
@@ -126,6 +126,23 @@ app.on('window-all-closed', () => {
 // Reduzir logs não críticos
 app.commandLine.appendSwitch('log-level', '3');
 
+// iniciar a conexão com o banco de dados (pedido direto do preload.js)
+ipcMain.on('db-connect', async (event) => {
+  let conectado = await conectar()
+  // se conectado for igual a true
+  if (conectado) {
+    // enviar uma mensagem para o renderizador trocar o ícone
+    setTimeout(() => {
+      event.reply('db-status', "conectado")
+    }, 500)
+  }
+})
+
+// IMPORTANTE! Desconectar do banco de dados quando a aplicação for encerrada
+app.on('before-quit', () => {
+  desconectar()
+})
+
 // Template do menu
 const template = [
   {
@@ -177,7 +194,6 @@ ipcMain.on('os-window', () => {
 ipcMain.on('carro-window', () => {
   carroWindow();
 });
-
 
 // =======================================================================================================================================================
 // == Clientes -  CRUD Create
