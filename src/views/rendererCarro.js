@@ -1,18 +1,21 @@
- // capturar os dados do input do formulario (passo 1 do fluxo)
-let frmOs = document.getElementById('frmOs')
+
+// capturar os dados do input do formulario (passo 1 do fluxo)
+let frmcarro = document.getElementById('frmcarro')
 let nameClient = document.getElementById('inputNameClient')
 let cpfClient = document.getElementById('inputCPFClient')
 let emailClient = document.getElementById('inputEmailClient')
 let phoneClient = document.getElementById('inputPhoneClient')
 let cepClient = document.getElementById('inputCEPClient')
+let addressClient = document.getElementById('inputAddressClient')
+let numberClient = document.getElementById('inputNumberClient')
+let complementClient = document.getElementById('inputComplementClient')
+let neighborhoodClient = document.getElementById('inputNeighborhoodClient')
+let cityClient = document.getElementById('inputCityClient')
+let ufClient = document.getElementById('inputUfClient')
+
+
 //============================================================================================================================
 // CRUD Create/Update ======================================================================================================
-
-
-
-
-
-
 
 
 

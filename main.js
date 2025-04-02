@@ -1,28 +1,20 @@
 console.log("Processo principal");
 
-
-const { app, BrowserWindow, nativeTheme, Menu, ipcMain } = require('electron');
-
-// esta linha esta relacionada ao preload.js
+const { app, BrowserWindow, nativeTheme, Menu, ipcMain, dialog, shell } = require('electron');
 const path = require('node:path');
+const fs = require('fs');
+const { conectar, desconectar } = require('./database');
+const clientModel = require('./src/models/Clientes.js');
+const osModel = require('./src/models/Os.js');
+const { jsPDF } = require('jspdf');
 
-// importação dos metodos conectar e desconectar 
-const { conectar, desconectar } = require('./database.js')
-
-// importação dos Schema Clientes da camada model
-const clientModel = require('./src/models/Clientes.js')
-
-const clientes = require('./src/models/Clientes.js')
-
-// Janela Principal
 let win;
 const createWindow = () => {
-  nativeTheme.themeSource = 'dark'; // Tema padrão
+  nativeTheme.themeSource = 'dark';
   win = new BrowserWindow({
     width: 800,
     height: 600,
     resizable: false,
-
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -32,82 +24,119 @@ const createWindow = () => {
   win.loadFile('./src/views/index.html');
 };
 
-// Janela Sobre
-function aboutWindow() {
-  nativeTheme.themeSource = 'dark';
+// Funções para abrir janelas
+function createChildWindow(file, width = 1010, height = 720) {
   const main = BrowserWindow.getFocusedWindow();
-  let about;
   if (main) {
-    about = new BrowserWindow({
-      width: 360,
-      height: 220,
+    let win = new BrowserWindow({
+      width, height,
       resizable: false,
-      minimizable: false,
-      parent: main,
-      modal: true
-    });
-  }
-  about.loadFile('./src/views/sobre.html');
-}
-
-// Janela Clientes
-let client;
-function clientWindow() {
-  nativeTheme.themeSource = 'dark';
-  const main = BrowserWindow.getFocusedWindow();
-  if (main) {
-    client = new BrowserWindow({
-      width: 1010,
-      height: 720,
-      //autoHideMenuBar:
-      //resizable: false,
       parent: main,
       modal: true,
-      webPreferences: {
-        preload: path.join(__dirname, 'preload.js')
-      }
+      webPreferences: { preload: path.join(__dirname, 'preload.js') }
     });
+    win.loadFile(`./src/views/${file}.html`);
+    win.center();
   }
-  client.loadFile('./src/views/clientes.html'); // Nome atualizado
-  client.center();
-}
-// Janela OS
-let os;
-function osWindow() {
-  nativeTheme.themeSource = 'dark';
-  const main = BrowserWindow.getFocusedWindow();
-  if (main) {
-    os = new BrowserWindow({
-      width: 1010,
-      height: 720,
-      resizable: false,
-      parent: main,
-      modal: true
-    });
-  }
-  os.loadFile('./src/views/OS.html'); // Nome atualizado
-  os.center();
 }
 
-// Janela CARRO
-let carro;
-function carroWindow() {
-  nativeTheme.themeSource = 'dark';
-  const main = BrowserWindow.getFocusedWindow();
-  if (main) {
-    carro = new BrowserWindow({
-      width: 1010,
-      height: 720,
-      resizable: false,
-      parent: main,
-      modal: true
+// Eventos do IPC para abrir janelas
+ipcMain.on('client-window', () => createChildWindow('clientes'));
+ipcMain.on('os-window', () => createChildWindow('OS'));
+ipcMain.on('carro-window', () => createChildWindow('carros'));
+
+// CRUD - Clientes
+ipcMain.on('new-client', async (event, client) => {
+  try {
+    const newClient = new clientModel({
+      nomeCliente: client.nameCli,
+      cpfCliente: client.cpfCli,
+      emailCliente: client.emailCli,
+      foneCliente: client.phoneCli,
+      cepCliente: client.cepCli,
+      logradouroCliente: client.addressCli,
+      numeroCliente: client.numberCli,
+      complementoCliente: client.complementCli,
+      bairroCliente: client.neighborhoodCli,
+      cidadeCliente: client.cityCli,
+      ufCliente: client.ufCli
     });
+    await newClient.save();
+    dialog.showMessageBox({ type: 'info', title: "Aviso", message: "Cliente adicionado com sucesso", buttons: ['OK'] });
+    event.reply('reset-form');
+  } catch (error) {
+    if (error.code === 11000) {
+      dialog.showMessageBox({ type: 'warning', title: "Atenção!", message: "CPF já cadastrado", buttons: ['OK'] });
+    }
+    console.log(error);
   }
-  carro.loadFile('./src/views/carros.html'); // Nome atualizado
-  carro.center();
+});
+
+// CRUD - OS
+ipcMain.on('new-OS', async (event, os) => {
+  try {
+    const newOS = new osModel({
+      descricaoOS: os.desOS,
+      materialOS: os.matOS,
+      dataOS: os.datOS,
+      orcamentoOS: os.orcOS,
+      pagamentoOS: os.pagOS,
+      statusOS: os.staOS
+    });
+    await newOS.save();
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// Relatório de Clientes
+async function relatorioClientes() {
+  try {
+    const clientes = await clientModel.find().sort({ nomeCliente: 1 });
+    const doc = new jsPDF();
+    doc.setFontSize(26).text("Relatório de Clientes", 14, 20);
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
+    doc.setFontSize(12).text(`Data: ${dataAtual}`, 160, 10);
+    let y = 45;
+    doc.text("Nome", 14, y).text("Telefone", 80, y).text("E-mail", 130, y);
+    doc.setLineWidth(0.5).line(10, y + 5, 200, y + 5);
+    const tempDir = app.getPath('temp');
+    const filePath = path.join(tempDir, 'clientes.pdf');
+    doc.save(filePath);
+    shell.openPath(filePath);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-// Iniciar a aplicação
+// Template do menu
+const template = [
+  { label: 'Cadastro', submenu: [
+      { label: 'Cadastro de Clientes', click: () => createChildWindow('clientes') },
+      { label: 'Cadastro de Veículos', click: () => createChildWindow('carros') },
+      { label: 'OS', click: () => createChildWindow('OS') },
+      { type: 'separator' },
+      { label: 'Sair', click: () => app.quit(), accelerator: 'Alt+F4' }
+    ]
+  },
+  { label: 'Relatórios', submenu: [
+      { label: 'Clientes', click: () => relatorioClientes() },
+      { label: 'OS abertas' },
+      { label: 'OS concluídas' }
+    ]
+  },
+  { label: 'Ferramentas', submenu: [
+      { label: 'Aplicar zoom', role: 'zoomIn' },
+      { label: 'Reduzir', role: 'zoomOut' },
+      { label: 'Restaurar zoom', role: 'resetZoom' },
+      { type: 'separator' },
+      { label: 'Recarregar', role: 'reload' },
+      { label: 'Ferramentas do Desenvolvedor', role: 'toggleDevTools' }
+    ]
+  },
+  { label: 'Ajuda', submenu: [ { label: 'Sobre', click: () => createChildWindow('sobre', 360, 200) } ] }
+];
+
 app.whenReady().then(() => {
   createWindow();
   app.on('activate', () => {
@@ -123,109 +152,94 @@ app.on('window-all-closed', () => {
   }
 });
 
-// Reduzir logs não críticos
-app.commandLine.appendSwitch('log-level', '3');
-
-// iniciar a conexão com o banco de dados (pedido direto do preload.js)
 ipcMain.on('db-connect', async (event) => {
-  let conectado = await conectar()
-  // se conectado for igual a true
+  let conectado = await conectar();
   if (conectado) {
-    // enviar uma mensagem para o renderizador trocar o ícone
-    setTimeout(() => {
-      event.reply('db-status', "conectado")
-    }, 500)
+    setTimeout(() => event.reply('db-status', "conectado"), 500);
   }
-})
+});
 
-// IMPORTANTE! Desconectar do banco de dados quando a aplicação for encerrada
 app.on('before-quit', () => {
-  desconectar()
-})
-
-// Template do menu
-const template = [
-  {
-    label: 'Cadastro',
-    submenu: [
-      { label: 'Cadastro do Veículo', click: () => carroWindow() },
-      { label: 'Cadastro dos Clientes', click: () => clientWindow() },
-      { label: 'OS', click: () => osWindow() },
-      { type: 'separator' },
-      { label: 'Sair', click: () => app.quit(), accelerator: 'Alt+F4' }
-    ]
-  },
-  {
-    label: 'Relatórios',
-    submenu: [
-      { label: 'Clientes' },
-      { label: 'OS abertas' },
-      { label: 'OS concluídas' }
-    ]
-  },
-  {
-    label: 'Ferramentas',
-    submenu: [
-      { label: 'Aplicar zoom', role: 'zoomIn' },
-      { label: 'Reduzir', role: 'zoomOut' },
-      { label: 'Restaurar o zoom padrão', role: 'resetZoom' },
-      { type: 'separator' },
-      { label: 'Recarregar', role: 'reload' },
-      { label: 'Ferramentas do Desenvolvedor', role: 'toggleDevTools' }
-    ]
-  },
-  {
-    label: 'Ajuda',
-    submenu: [
-      { label: 'Sobre', click: () => aboutWindow() }
-    ]
-  }
-];
-
-// Recebimento dos pedidos do renderizador para abertura de janelas (botões)
-ipcMain.on('client-window', () => {
-  clientWindow();
+  desconectar();
 });
 
-ipcMain.on('os-window', () => {
-  osWindow();
-});
-
-ipcMain.on('carro-window', () => {
-  carroWindow();
-});
-
-// =======================================================================================================================================================
-// == Clientes -  CRUD Create
-// recebimento do objeto que contem os dados do cliente
-ipcMain.on('new-client', async (event, client) => {
-  // importante ! teste de recebimento dos dados do cliente
-  console.log(client)
-  // cadastrar a estrutura de dados no banco MongoDB
+// == Relatorio de Clientes ================
+async function relatorioClientes() {
   try {
-    // criar uma nova de estrutura de dados usando a classe modelo. Atenção !
-    // Os atributos precisam ser identicos ao modelo de dados cliente.js e os valores
-    // sao definidos pelo conteudo do objeto cliente
-    const newClient = new clientModel({
-      nomeCliente: client.nameCli,
-      cpfCliente: client.cpfCli,
-      emailCliente: client.emailCli,
-      foneCliente: client.phoneCli,
-      cepCliente: client.cepCli,
-      logradouroCliente: client.addressCli,
-      numeroCliente: client.numberCli,
-      complementoCliente: client.complementCli,
-      bairroCliente: client.neighborhoodCli,
-      cidadeCliente: client.cityCli,
-      ufCliente: client.ufCli
+    const clientes = await clientModel.find().sort({ nomeClient: 1 })
+    //console.log(cliente)
 
+    // p - portrait | landscape | mm e a4 (folha A4 (210x297mm))
+
+    const doc = new jsPDF('p', 'mm', 'a4')
+    // inserir imagem no documento pdf
+    // imagePath (caminho da imagem que sera inserida no pdf)
+    // imagePath( uso da biblioteca fs para ler o arquivo no formato png)
+    const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logomartelo (2).png')
+    const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' })
+    doc.addImage(imageBase64, 'PNG', 5, 8) //(5mm, 8mm x, y)
+
+    // definir o tamanho da fonte (tamanho equivalente ao word)
+    doc.setFontSize(18)
+    //escrever um texto (titulo)
+    doc.text("Relatorio de clientes", 14, 45)// x, y (mm)
+    //inserir a data atual no relatorio
+    const dataAtual = new Date().toLocaleDateString('pt-BR')
+    doc.setFontSize(12)
+    doc.text(`Data: ${dataAtual}`, 160, 10)
+    /// variavel de apoio na formatação
+    let y = 60
+    doc.text("Nome", 14, y)
+    doc.text("Telefone", 80, y)
+    doc.text("E-mail", 130, y)
+    y += 5
+    //desenhar uma linha 
+    doc.setLineWidth(0.5) // expessura da linha 
+    doc.line(10, y, 200, y) // 10 (inicio) ---- 200 fim
+   
+    // renderizar os clientes cadastrados no banco
+    y += 10 // espaçamento da linha 
+    // percorrer
+    clientes.forEach((c) => {
+      // adicionar outr pagina se a folha inteira for preenchida (estratégia é saber o tamanho da folha)
+      // folha A4 y = 297mm
+      if (y > 290) {
+        doc.addPage()
+        y = 20// resetar a variavel y
+        doc.text("Nome", 14, y)
+        doc.text("Telefone", 80, y)
+        doc.text("E-mail", 130, y)
+        y += 5
+        //desenhar uma linha 
+        doc.setLineWidth(0.5) // expessura da linha 
+        doc.line(10, y, 200, y) // 10 (inicio) ---- 200 fim
+        y += 10 
+      }
+      doc.text(c.nomeCliente, 14, y)
+      doc.text(c.foneCliente, 80, y)
+      doc.text(c.emailCliente || "N/A", 130, y)
+      y += 10 // quebra de linha
     })
-    // salver os dados do cliente no banco de dados
-    await newClient.save()
+
+    // Adicionar numeração automatica 
+    const paginas = doc.internal.getNumberOfPages()
+    for (let i = 1; i <= paginas; i++){
+      doc.setPage(i)
+      doc.setFontSize(10)
+      doc.text(`Página ${i} de ${paginas}`, 105, 290, {align:'center'})
+    }
+
+    // Definir o caminho do arquivo temporario
+    const tempDir = app.getPath('temp')
+    const filePath = path.join(tempDir, 'clientes.pdf')
+
+
+
+    //salvar o arquivo no aplicativo padrão de leitura de pdf do computador do usúario
+    doc.save(filePath)
+    //
+    shell.openPath(filePath)
   } catch (error) {
     console.log(error)
   }
-})
-
-// _FIM CLientes - CRUD Create 
-//========================================================================================================================================================
+}
