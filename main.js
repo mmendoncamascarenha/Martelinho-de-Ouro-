@@ -89,6 +89,26 @@ ipcMain.on('new-OS', async (event, os) => {
   }
 });
 
+// CRUD - CARRO
+ipcMain.on('new-carro', async (event, carro) => {
+  try {
+    const newCarro = new carroModel({
+      placaCarro: carro.plaCarro,
+      marcaCarro: carro.marCarro,
+      modeloCarro: carro.modCarro,
+      anoCarro: carro.anoCarro,
+      corCarro: carro.coCarro,
+      descricaoCarro: carro.desCarro
+    });
+    await newCarro.save();
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
+
+
 // Relatório de Clientes
 async function relatorioClientes() {
   try {

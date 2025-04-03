@@ -14,42 +14,42 @@
 <body>
     <div class="container">
         <h1 class="text-center mt-4">Cadastro de Carros</h1>
-        <form class="mt-2 row g-3">
+        <form id="frmCar" class="mt-2 row g-3">
 
             <!-- Placa -->
             <div class="col-md-4">
                 <label class="form-label">Placa</label>
-                <input type="text" class="form-control" id="inputPlaca" required maxlength="7">
+                <input type="text" class="form-control" id="inputPlateCar" required maxlength="7">
             </div>
 
             <!-- Marca -->
             <div class="col-md-4">
                 <label class="form-label">Marca</label>
-                <input type="text" class="form-control" id="inputMarca" required>
+                <input type="text" class="form-control" id="inputMarkCar" required>
             </div>
 
             <!-- Modelo -->
             <div class="col-md-4">
                 <label class="form-label">Modelo</label>
-                <input type="text" class="form-control" id="inputModelo" required>
+                <input type="text" class="form-control" id="inputModelCar" required>
             </div>
 
             <!-- Ano -->
             <div class="col-md-3">
                 <label class="form-label">Ano</label>
-                <input type="number" class="form-control" id="inputAno" required min="1900" max="2025">
+                <input type="number" class="form-control" id="inputYearCar" required min="1900" max="2025">
             </div>
 
             <!-- Cor -->
             <div class="col-md-3">
                 <label class="form-label">Cor</label>
-                <input type="text" class="form-control" id="inputCor" required>
+                <input type="text" class="form-control" id="inputColorCar" required>
             </div>
 
             <!-- Descrição do Conserto -->
             <div class="col-md-12">
                 <label class="form-label">Descrição do Conserto</label>
-                <textarea class="form-control" id="inputDescricao" rows="3" required></textarea>
+                <textarea class="form-control" id="inputDescriptionCar" rows="3" required></textarea>
             </div>
 
             <!-- Botões -->

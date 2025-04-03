@@ -23,6 +23,6 @@ contextBridge.exposeInMainWorld('api', {
 })
 
 
-function dbStatus(message) {
-    ipcRenderer.on('db-status', message)
-}
+//function dbStatus(message) {
+ //   ipcRenderer.on('db-status', message)
+//}

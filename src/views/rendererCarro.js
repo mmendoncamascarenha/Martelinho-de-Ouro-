@@ -1,4 +1,3 @@
-
 // capturar os dados do input do formulario (passo 1 do fluxo)
 let frmcarro = document.getElementById('frmcarro')
 let nameClient = document.getElementById('inputNameClient')
