@@ -74,7 +74,7 @@ ipcMain.on('new-client', async (event, client) => {
 });
 
 // CRUD - OS
-ipcMain.on('new-OS', async (event, os) => {
+ipcMain.on('new-os', async (event, os) => {
   try {
     const newOS = new osModel({
       descricaoOS: os.desOS,
@@ -85,10 +85,13 @@ ipcMain.on('new-OS', async (event, os) => {
       statusOS: os.staOS
     });
     await newOS.save();
+    dialog.showMessageBox({ type: 'info', title: "Aviso", message: "Ordem de Serviço adicionada com sucesso", buttons: ['OK'] });
+    event.reply('reset-form');
   } catch (error) {
     console.log(error);
   }
 });
+
 
 // CRUD - CARRO
 ipcMain.on('new-carro', async (event, carro) => {
@@ -262,5 +265,125 @@ async function relatorioClientes() {
     shell.openPath(filePath)
   } catch (error) {
     console.log(error)
+  }
+}
+
+
+async function relatorioOS(statusFiltrado = null) {
+  try {
+    const query = statusFiltrado ? { staOS: statusFiltrado } : {};
+    const ordens = await osModel.find(query).sort({ desOS: 1 });
+
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logomartelo (2).png');
+    const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' });
+    doc.addImage(imageBase64, 'PNG', 5, 8);
+
+    doc.setFontSize(18);
+    doc.text("Relatório de Ordens de Serviço", 14, 45);
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
+    doc.setFontSize(12);
+    doc.text(`Data: ${dataAtual}`, 160, 10);
+
+    let y = 60;
+    doc.text("Descrição", 14, y);
+    doc.text("Data", 80, y);
+    doc.text("Status", 130, y);
+    y += 5;
+    doc.setLineWidth(0.5);
+    doc.line(10, y, 200, y);
+    y += 10;
+
+    ordens.forEach((o) => {
+      if (y > 290) {
+        doc.addPage();
+        y = 20;
+        doc.text("Descrição", 14, y);
+        doc.text("Data", 80, y);
+        doc.text("Status", 130, y);
+        y += 5;
+        doc.setLineWidth(0.5);
+        doc.line(10, y, 200, y);
+        y += 10;
+      }
+      doc.text(o.desOS || "N/A", 14, y);
+      doc.text(o.datOS || "N/A", 80, y);
+      doc.text(o.staOS || "N/A", 130, y);
+      y += 10;
+    });
+
+    const paginas = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= paginas; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.text(`Página ${i} de ${paginas}`, 105, 290, { align: 'center' });
+    }
+
+    const tempDir = app.getPath('temp');
+    const filePath = path.join(tempDir, 'ordens_servico.pdf');
+    doc.save(filePath);
+    shell.openPath(filePath);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+async function relatorioOS() {
+  try {
+    const ordens = await osModel.find().sort({ desOS: 1 })
+
+    const doc = new jsPDF('p', 'mm', 'a4')
+    const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logomartelo (2).png')
+    const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' })
+    doc.addImage(imageBase64, 'PNG', 5, 8)
+
+    doc.setFontSize(18)
+    doc.text("Relatório de Ordens de Serviço", 14, 45)
+    const dataAtual = new Date().toLocaleDateString('pt-BR')
+    doc.setFontSize(12)
+    doc.text(`Data: ${dataAtual}`, 160, 10)
+
+    let y = 60
+    doc.text("Descrição", 14, y)
+    doc.text("Data", 80, y)
+    doc.text("Status", 130, y)
+    y += 5
+    doc.setLineWidth(0.5)
+    doc.line(10, y, 200, y)
+    y += 10
+
+    ordens.forEach((o) => {
+      if (y > 290) {
+        doc.addPage()
+        y = 20
+        doc.text("Descrição", 14, y)
+        doc.text("Data", 80, y)
+        doc.text("Status", 130, y)
+        y += 5
+        doc.setLineWidth(0.5)
+        doc.line(10, y, 200, y)
+        y += 10
+      }
+      doc.text(o.desOS || "N/A", 14, y)
+      doc.text(o.datOS || "N/A", 80, y)
+      doc.text(o.staOS || "N/A", 130, y)
+      y += 10
+    })
+
+    const paginas = doc.internal.getNumberOfPages()
+    for (let i = 1; i <= paginas; i++) {
+      doc.setPage(i)
+      doc.setFontSize(10)
+      doc.text(`Página ${i} de ${paginas}`, 105, 290, { align: 'center' })
+    }
+
+    const tempDir = app.getPath('temp')
+    const filePath = path.join(tempDir, 'ordens_servico.pdf')
+    doc.save(filePath)
+    shell.openPath(filePath)
+  } catch (error) {
+    console.error(error)
   }
 }

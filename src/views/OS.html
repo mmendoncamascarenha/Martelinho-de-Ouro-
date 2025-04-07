@@ -9,54 +9,91 @@
     <link rel="stylesheet" href="../public/css/bootstrap.min.css">
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="../public/css/style.css">
-    <!-- impedir a execução de scripts externos ou não autorizados -->
+    <!-- Segurança -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
 </head>
 
 <body>
     <div class="container">
         <h1 class="text-center mt-4">Ordem de Serviço</h1>
-        <form class="mt-3 row g-3">
-            <!-- OS -->
+        <form id="frmOs" class="mt-3 row g-3">
+            <!-- Nº OS -->
             <div class="col-md-4">
                 <label class="form-label">Nº OS</label>
                 <input type="text" class="form-control" id="txtOs" disabled>
             </div>
+
             <!-- Data -->
             <div class="col-md-3">
                 <label class="form-label">Data</label>
                 <input type="text" class="form-control" id="txtData" disabled>
             </div>
+
             <!-- Buscar Cliente -->
             <div class="col-md-5">
                 <label class="form-label">Buscar Cliente</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="inputSearchClient" spellcheck="false" required maxlength="30">
+                    <input type="text" class="form-control" id="inputSearchClient" spellcheck="false" maxlength="30" required>
                     <span class="input-group-text">
                         <img src="../public/img/search.png" alt="lupa" width="20">
                     </span>
                 </div>
             </div>
-            <!-- Nome -->
+
+            <!-- Nome do Cliente -->
             <div class="col-md-5">
                 <label class="form-label">Nome</label>
-                <input type="text" class="form-control" id="inputNameOs" spellcheck="false" maxlength="30" disabled>
+                <input type="text" class="form-control" id="inputNameOs" maxlength="30" disabled>
             </div>
+
             <!-- Telefone -->
             <div class="col-md-3">
                 <label class="form-label">Telefone</label>
-                <input type="text" class="form-control" id="inputPhoneOs" spellcheck="false" maxlength="15" disabled>
+                <input type="text" class="form-control" id="inputPhoneOs" maxlength="15" disabled>
             </div>
+
             <!-- CPF -->
             <div class="col-md-4">
                 <label class="form-label">CPF</label>
-                <input type="text" class="form-control" id="inputCPFOs" spellcheck="false" maxlength="15" disabled>
+                <input type="text" class="form-control" id="inputCPFOs" maxlength="15" disabled>
             </div>
+
             <hr class="mt-4 border border-secondary border-1">
-            <!-- Status -->
-            <div class="col-md-4">
+
+            <!-- Descrição do serviço -->
+            <div class="col-md-6">
+                <label class="form-label">Descrição</label>
+                <input type="text" class="form-control" id="inputDescriptionOS" required>
+            </div>
+
+            <!-- Materiais utilizados -->
+            <div class="col-md-6">
+                <label class="form-label">Materiais utilizados</label>
+                <input type="text" class="form-control" id="inputMaterialOS" required>
+            </div>
+
+            <!-- Data da OS -->
+            <div class="col-md-3">
+                <label class="form-label">Data da OS</label>
+                <input type="date" class="form-control" id="inputDateOS" required>
+            </div>
+
+            <!-- Orçamento -->
+            <div class="col-md-3">
+                <label class="form-label">Orçamento</label>
+                <input type="number" class="form-control" id="inputBudgetOS" required>
+            </div>
+
+            <!-- Forma de pagamento -->
+            <div class="col-md-3">
+                <label class="form-label">Forma de Pagamento</label>
+                <input type="text" class="form-control" id="inputPaymentOS" required>
+            </div>
+
+            <!-- Status da OS -->
+            <div class="col-md-3">
                 <label class="form-label">Status da OS</label>
-                <select class="form-select" id="osStatus">
+                <select class="form-select" id="inputStatusOS" required>
                     <option value="">Selecione</option>
                     <option>Aberta</option>
                     <option>Em andamento</option>
@@ -65,6 +102,8 @@
                     <option>Cancelada</option>
                 </select>
             </div>
+
+            <!-- Botões -->
             <div class="d-flex justify-content-center gap-2 mt-3">
                 <button type="button" class="btn btn-success">Gerar OS</button>
                 <button type="button" class="btn btn-primary">Buscar OS</button>
@@ -74,8 +113,32 @@
             </div>
         </form>
     </div>
-    <!-- Bootstrap -->
+
+    <!-- Scripts -->
     <script src="../public/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.btn-success').addEventListener('click', () => {
+                const os = {
+                    desOS: document.getElementById('inputDescriptionOS').value,
+                    matOS: document.getElementById('inputMaterialOS').value,
+                    datOS: document.getElementById('inputDateOS').value,
+                    orcOS: parseFloat(document.getElementById('inputBudgetOS').value),
+                    pagOS: document.getElementById('inputPaymentOS').value,
+                    staOS: document.getElementById('inputStatusOS').value,
+                    cpfOs: document.getElementById('inputCPFOs').value // CPF incluído!
+                };
+
+                if (!os.cpfOs) {
+                    alert("Erro: CPF do cliente não encontrado.");
+                    return;
+                }
+
+                api.newOS(os);
+                alert("Ordem de serviço cadastrada com sucesso!");
+            });
+        });
+    </script>
 </body>
 
 </html>
