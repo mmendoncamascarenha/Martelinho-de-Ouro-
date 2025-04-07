@@ -5,6 +5,7 @@ const path = require('node:path');
 const fs = require('fs');
 const { conectar, desconectar } = require('./database');
 const clientModel = require('./src/models/Clientes.js');
+const carroModel = require('./src/models/Carro.js'); // <- isso aqui!
 const osModel = require('./src/models/Os.js');
 const { jsPDF } = require('jspdf');
 

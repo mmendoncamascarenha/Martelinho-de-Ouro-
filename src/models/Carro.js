@@ -8,7 +8,7 @@ const { model, Schema} = require('mongoose')
 
 
 // criação da estrutura da coleção Clientes
-const clienteSchema = new Schema ({
+const carroSchema = new Schema ({
     placaCarro:{
         type: String
     },
@@ -32,5 +32,5 @@ const clienteSchema = new Schema ({
 // exportar para o main o modelo de dados
 // OBS: Clientes sera o nome da coleção 
 
-module.exports = model('carro', clienteSchema)
+module.exports = model('carro', carroSchema)
     

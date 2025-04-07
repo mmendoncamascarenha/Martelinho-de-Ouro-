@@ -60,6 +60,23 @@
                 <button type="button" class="btn btn-danger">Excluir</button>
             </div>
         </form>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelector('.btn-success').addEventListener('click', () => {
+                    const carro = {
+                        plaCarro: document.getElementById('inputPlateCar').value,
+                        marCarro: document.getElementById('inputMarkCar').value,
+                        modCarro: document.getElementById('inputModelCar').value,
+                        anoCarro: document.getElementById('inputYearCar').value,
+                        coCarro: document.getElementById('inputColorCar').value,
+                        desCarro: document.getElementById('inputDescriptionCar').value
+                    };
+                    api.newCarro(carro);
+                    alert("Veículo cadastrado com sucesso!");
+                });
+            });
+            </script>
+            
     </div>
     
 </body>

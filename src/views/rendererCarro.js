@@ -1,62 +1,31 @@
-// capturar os dados do input do formulario (passo 1 do fluxo)
-let frmcarro = document.getElementById('frmcarro')
-let nameClient = document.getElementById('inputNameClient')
-let cpfClient = document.getElementById('inputCPFClient')
-let emailClient = document.getElementById('inputEmailClient')
-let phoneClient = document.getElementById('inputPhoneClient')
-let cepClient = document.getElementById('inputCEPClient')
-let addressClient = document.getElementById('inputAddressClient')
-let numberClient = document.getElementById('inputNumberClient')
-let complementClient = document.getElementById('inputComplementClient')
-let neighborhoodClient = document.getElementById('inputNeighborhoodClient')
-let cityClient = document.getElementById('inputCityClient')
-let ufClient = document.getElementById('inputUfClient')
+// capturar os dados do formulário de Carro
+let frmCar = document.getElementById('frmCar')
+let plateCar = document.getElementById('inputPlateCar')
+let markCar = document.getElementById('inputMarkCar') 
+let modelCar = document.getElementById('inputModelCar')
+let yearCar = document.getElementById('inputYearCar')
+let colorCar = document.getElementById('inputColorCar')
+let descriptionCar = document.getElementById('inputDescriptionCar')
 
-
-//============================================================================================================================
-// CRUD Create/Update ======================================================================================================
-
-
-
-
-//=============================================== Evento associado ao botão ==========================================
-//============================================(uso das validações do html)============================================
-frmClient.addEventListener('submit', async (event) => {
-    //evitar o comportamento padrao do submit que é enviar os dados do formulario e reiniciar o documento html
+// Evento de submit
+frmCar.addEventListener('submit', async (event) => {
     event.preventDefault()
-    // teste importante (recebimento dos dados do formulario - passo 1 do fluxo)
-    console.log(nameClient.value, 
-        cpfClient.value,
-        emailClient.value,
-        phoneClient.value, 
-        cepClient.value, 
-        addressClient.value, 
-        numberClient.value, 
-        complementClient.value, 
-        neighborhoodClient.value, 
-        cityClient.value, 
-        ufClient.value)
 
-    // criar um objeto para armazenar os dados do cliente antes de enviar ao main
-    const client = {
-        nameCli: nameClient.value,
-        cpfCli: cpfClient.value,
-        emailCli: emailClient.value,
-        phoneCli: phoneClient.value,
-        cepCli: cepClient.value,
-        addressCli: addressClient.value,
-        numberCli: numberClient.value,
-        complementCli: complementClient.value,
-        neighborhoodCli: neighborhoodClient.value,
-        cityCli: cityClient.value,
-        ufCli: ufClient.value
+    console.log(
+        plateCar.value,
+        modelCar.value,
+        yearCar.value,
+        colorCar.value,
+        descriptionCar.value
+    )
+
+    const car = {
+        placaCarro: plateCar.value,
+        marcaCarro: markCar.value,
+        modeloCarro: modelCar.value,
+        anoCarro: yearCar.value,
+        corCarro: colorCar.value,
+        descricaoCarro: descriptionCar.value
     }
-    api.newClient(client) 
-
-
-
+    api.newCar(car)
 })
-
-
-//============================================================================================================================
-// =================================================Fim CRUD Create/Update==================================================

@@ -16,11 +16,10 @@ contextBridge.exposeInMainWorld('api', {
     osWindow: () => ipcRenderer.send('os-window'),
     carroWindow: () => ipcRenderer.send('carro-window'),
     dbStatus: (message) => ipcRenderer.on('db-status', message),
-    newClient: (client) => ipcRenderer.send('new-client', client)
-    //newOS: (OS) => ipcRenderer.send('new-os', OS),
-    //newOS: (OS) => ipcRenderer.send('new-os', OS)
-    //resetForm: (args) => ipcRenderer.on('reset-form', args)
-})
+    newClient: (client) => ipcRenderer.send('new-client', client),
+    newCarro: (carro) => ipcRenderer.send('new-carro', carro)
+});
+
 
 
 //function dbStatus(message) {
