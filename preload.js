@@ -18,7 +18,12 @@ contextBridge.exposeInMainWorld('api', {
     dbStatus: (message) => ipcRenderer.on('db-status', message),
     newClient: (client) => ipcRenderer.send('new-client', client),
     newCarro: (carro) => ipcRenderer.send('new-carro', carro),
-    newOS: (os) => ipcRenderer.send('new-os', os)
+    newOS: (os) => ipcRenderer.send('new-os', os),
+    resetForm: (args) => ipcRenderer.on('reset-form', args),
+    searchName: (name) => ipcRenderer.send('search-name', name),
+    renderClient: (dataClient) => ipcRenderer.on('renderClient', dataClient),
+    validateSearch: () => ipcRenderer.send('validate-search'),
+    buscarCliente: (args) => ipcRenderer.addListener('set-client', args)
 });
 //function dbStatus(message) {
  //   ipcRenderer.on('db-status', message)

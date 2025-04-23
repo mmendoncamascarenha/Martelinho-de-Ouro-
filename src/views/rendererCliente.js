@@ -35,6 +35,31 @@ document.addEventListener('DOMContentLoaded', () => {
     foco.focus()
 })
 
+//============================================================================================================================//======================================================Manipulação da tecla Enter
+
+// Função para manipular o evento da tecla enter
+function teclaEnter(event){
+    // se  tecla  Enter for pressionada 
+    if (event.key=== "Enter") {
+        event.preventDefault()// ignorar o comportamento padrao
+        // associado o Enter a busca  do cliente
+        buscarCliente()
+    }
+}
+
+
+//=========================================================================================================================
+// =========================================Função para restaurar o padrao da tecla Enter (submit)
+
+function restaurarEnter(){
+    frmClient.removeEventListener('keydown',teclaEnter)
+}
+
+// "Escutar do Evento Tercla Enter"
+frmClient.addEventListener('keydown',teclaEnter)
+
+
+//============================================================================================================================//====================================================Fim Da Manipulação da Tecla Enter
 
 
 // capturar os dados do input do formulario (passo 1 do fluxo)
@@ -156,3 +181,90 @@ frmClient.addEventListener('submit', async (event) => {
 
 //============================================================================================================================
 // =================================================Fim CRUD Create/Update==================================================
+
+
+//==========================================================================================================================
+// ==================================================== CRUD Read ==========================================================
+
+function buscarCliente(){
+    //console.log("teste do botão buscar")
+
+    // Passo 1: Capturar o nome do cliente
+    let name = document.getElementById('searchClient').value
+    console.log(name) // teste do passo 1
+    api.searchName(name) // passo 2: envio do nome ao main
+    // Recebimento dos dados do cliente 
+    api.renderClient((event, dataClient) => {
+        console.log(dataClient) // teste do passo 5
+
+        // Passo 6: renderizar os dados do cliente no formulario
+        // - Criar um vetor global para manipulação dos dados 
+        // - Criar uma constante para converter os dados recebidos que estão no formato string para o formato JSON (JSON.parse)
+        // usar o laço forEach para percorrer o vetor e setar o campo (caixas de texto) do formulario
+        const dadosCliente = JSON.parse(dataClient)
+        // atribuir ao vetor os dados do cliente
+        arrayClient = dadosCliente
+        // extrair os dados do cliente
+        arrayClient.forEach((c) => {
+            nameClient.value = c.nomeCliente,
+            cpfClient.value = c.cpfCliente,
+            emailClient.value = c.emailCliente,
+            phoneClient.value = c.foneCliente,    
+            cepClient.value = c.cepCliente,
+            addressClient.value = c.logradouroCliente,
+            numberClient.value = c.numeroCliente,
+            complementClient.value = c.complementoCliente,
+            neighborhoodClient.value = c.bairroCliente,
+            cityClient.value = c.cidadeCliente,
+            ufClient.value = c.ufCliente
+        })
+    })
+}
+
+
+// Setar o cliente não cadastrado
+api.setClient((args) => {
+    let campoBusca = document.getElementById('searchClient').value.trim()
+
+    // Regex para verificar se o valor é só número (CPF)
+    if (/^\d{11}$/.test(campoBusca)) {
+        // É um número → CPF
+        cpfClient.focus()
+        foco.value = ""
+        cpfClient.value = campoBusca
+    } 
+    else if(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(campoBusca)){
+        cpfClient.focus()
+        foco.value = ""
+        cpfClient.value = campoBusca
+    }
+    else {
+        // Não é número → Nome
+        nameClient.focus()
+        foco.value = ""
+        nameClient.value = campoBusca
+    }
+})
+
+
+// ==================================================fim CRUD Read =========================================================
+// =========================================================================================================================
+
+
+
+
+
+// =========================================================================================================================
+// ====================================================Reset form ==========================================================
+function resetForm(){
+    //Limpar os campos e resetar o formulario com as configurações pré definidas
+    location.reload()
+}
+
+// Recebimento do pedido do main para resetar o formulario
+api.resetForm((args)=>{
+    resetForm()
+})
+
+// ================================================= Fim - Reset form =====================================================
+// ========================================================================================================================

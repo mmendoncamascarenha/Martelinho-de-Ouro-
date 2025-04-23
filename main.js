@@ -268,122 +268,72 @@ async function relatorioClientes() {
   }
 }
 
+// ==============================================FIM DE RELATORIOS DE CLIENTES==============================================
 
-async function relatorioOS(statusFiltrado = null) {
-  try {
-    const query = statusFiltrado ? { staOS: statusFiltrado } : {};
-    const ordens = await osModel.find(query).sort({ desOS: 1 });
 
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logomartelo (2).png');
-    const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' });
-    doc.addImage(imageBase64, 'PNG', 5, 8);
+// =========================================================================================================================
+// ==CRUD Read =============================
 
-    doc.setFontSize(18);
-    doc.text("Relatório de Ordens de Serviço", 14, 45);
-    const dataAtual = new Date().toLocaleDateString('pt-BR');
-    doc.setFontSize(12);
-    doc.text(`Data: ${dataAtual}`, 160, 10);
+// Validação de busca (preenchimento obrigatorio)
+ipcMain.on('validate-search', () => {
+  dialog.showMessageBox({
+    type: 'warning',
+    title: 'Atenção',
+    message: 'Preencha o campo de busca',
+    buttons: ['OK']
+  })
+})
 
-    let y = 60;
-    doc.text("Descrição", 14, y);
-    doc.text("Data", 80, y);
-    doc.text("Status", 130, y);
-    y += 5;
-    doc.setLineWidth(0.5);
-    doc.line(10, y, 200, y);
-    y += 10;
 
-    ordens.forEach((o) => {
-      if (y > 290) {
-        doc.addPage();
-        y = 20;
-        doc.text("Descrição", 14, y);
-        doc.text("Data", 80, y);
-        doc.text("Status", 130, y);
-        y += 5;
-        doc.setLineWidth(0.5);
-        doc.line(10, y, 200, y);
-        y += 10;
-      }
-      doc.text(o.desOS || "N/A", 14, y);
-      doc.text(o.datOS || "N/A", 80, y);
-      doc.text(o.staOS || "N/A", 130, y);
-      y += 10;
-    });
+ipcMain.on('search-name', async(event, name) => {
+  //console.log("teste IPC search-name") Dica para testar o funcionamento
+  //console.log(name) // teste do passo 2 (importante)
 
-    const paginas = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= paginas; i++) {
-      doc.setPage(i);
-      doc.setFontSize(10);
-      doc.text(`Página ${i} de ${paginas}`, 105, 290, { align: 'center' });
+  // passos 3 e 4 busca dos dados do cliente do banco
+  //find({nomeCliente: name}) - busca pelo nome
+  //RegExp(name, i) - (insensitive / Ignorar maiúsculo ou minúsculo)
+  try{
+    /*const dataClient = await clientModel.find({
+      nomeCliente: new RegExp(name, 'i')
+    })*/
+      const dataClient  = await clientModel.find({
+        $or: [
+          { nomeCliente: new RegExp(name, 'i') },
+          { cpfCliente: new RegExp(name, 'i') }
+        ]
+      })
+    console.log(dataClient) // teste passo 3 e 4 (Importante!)
+
+    // melhoria d eexperiencia do usuario (se o cliente nao estiver cadastrado, alertar o usuario e questionar se ele
+    // quer cadastrar este novo cliente. Se não quiser cadastrar, limpar os campos, se quiser cadastrar recortar o nome do cliente do campo de busca e colar no campo nome)
+
+    // se o vetor estiver vazio []
+    if(dataClient.length === 0) {
+      dialog.showMessageBox({
+        type: 'warning',
+        title: "Aviso",
+        message: "Cliente não cadastrado.\nDeseja cadastra-lo",
+        defaultId: 0, //botão 0
+        buttons: ['Sim', 'Não'] // [0, 1]
+      }).then((result) => {
+
+      })
+
+    } else {
+
     }
 
-    const tempDir = app.getPath('temp');
-    const filePath = path.join(tempDir, 'ordens_servico.pdf');
-    doc.save(filePath);
-    shell.openPath(filePath);
-  } catch (error) {
-    console.error(error);
+
+    // Passo 5: 
+    // enviando os dados do cliente ao rendererCliente
+    // OBS: IPC só trabalha com string, então é necessario converter o JSON para string JSON.stringify(dataClient)
+    event.reply('renderClient', JSON.stringify(dataClient))
+
+  }catch (error) {
+    console.log (error)
   }
-}
+})
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-async function relatorioOS() {
-  try {
-    const ordens = await osModel.find().sort({ desOS: 1 })
-
-    const doc = new jsPDF('p', 'mm', 'a4')
-    const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logomartelo (2).png')
-    const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' })
-    doc.addImage(imageBase64, 'PNG', 5, 8)
-
-    doc.setFontSize(18)
-    doc.text("Relatório de Ordens de Serviço", 14, 45)
-    const dataAtual = new Date().toLocaleDateString('pt-BR')
-    doc.setFontSize(12)
-    doc.text(`Data: ${dataAtual}`, 160, 10)
-
-    let y = 60
-    doc.text("Descrição", 14, y)
-    doc.text("Data", 80, y)
-    doc.text("Status", 130, y)
-    y += 5
-    doc.setLineWidth(0.5)
-    doc.line(10, y, 200, y)
-    y += 10
-
-    ordens.forEach((o) => {
-      if (y > 290) {
-        doc.addPage()
-        y = 20
-        doc.text("Descrição", 14, y)
-        doc.text("Data", 80, y)
-        doc.text("Status", 130, y)
-        y += 5
-        doc.setLineWidth(0.5)
-        doc.line(10, y, 200, y)
-        y += 10
-      }
-      doc.text(o.desOS || "N/A", 14, y)
-      doc.text(o.datOS || "N/A", 80, y)
-      doc.text(o.staOS || "N/A", 130, y)
-      y += 10
-    })
-
-    const paginas = doc.internal.getNumberOfPages()
-    for (let i = 1; i <= paginas; i++) {
-      doc.setPage(i)
-      doc.setFontSize(10)
-      doc.text(`Página ${i} de ${paginas}`, 105, 290, { align: 'center' })
-    }
-
-    const tempDir = app.getPath('temp')
-    const filePath = path.join(tempDir, 'ordens_servico.pdf')
-    doc.save(filePath)
-    shell.openPath(filePath)
-  } catch (error) {
-    console.error(error)
-  }
-}
+// ===================================================fim CRUD Read =======================================================
+// ========================================================================================================================
