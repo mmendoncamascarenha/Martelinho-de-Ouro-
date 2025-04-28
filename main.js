@@ -24,6 +24,29 @@ const createWindow = () => {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
   win.loadFile('./src/views/index.html');
 };
+// janela clientes
+let client
+function clientWindow() {
+  nativeTheme.themeSource = 'light'
+  const main = BrowserWindow.getFocusedWindow()
+  if (main) {
+    client = new BrowserWindow({
+      width: 1010,
+      height: 720,
+      //autoHideMenuBar: true,
+      // resizable: false,
+      parent: main,
+      modal: true,
+      // ativação do preload.js
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js')
+      }
+    })
+
+  }
+  client.loadFile('./src/views/cliente.html')
+  client.center() //iniciar no centro da tela
+}
 
 // Funções para abrir janelas
 function createChildWindow(file, width = 1010, height = 720) {
@@ -337,3 +360,32 @@ ipcMain.on('search-name', async(event, name) => {
 
 // ===================================================fim CRUD Read =======================================================
 // ========================================================================================================================
+
+//==========================================================================================================================
+//===================================================== CRUD DELETE
+ipcMain.on('delete-client', async(event,id) => {
+  console.log(id) // teste do passo 2 (recebimento do id)
+  try {
+    //importante - confirmar a exclusao
+    // client é o nome da variavel que representa a janela
+    const {response} = await dialog.showMessageBox(client, {
+      type: 'warning',
+      title: "Atenção!",
+      message: "Desejar excluir este cliente?\nEsta ação não poderá ser desfeita.",
+      buttons: ['Cancelar','Excluir'] //[0, 1]
+    })
+    if(response === 1){
+      // Passo 3: Excluir o registro do cliente
+      const delClient = await clientModel.findByIdAndDelete(id)
+      event.reply('reset-form')
+    }
+  } catch (error){
+    console.log(error)
+
+  }
+})
+
+
+
+//==========================================================================================================================
+//=================================================== FIM DO CRUD DELETE

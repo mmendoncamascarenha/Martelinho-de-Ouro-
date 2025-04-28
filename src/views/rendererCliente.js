@@ -11,6 +11,8 @@ let complementClient = document.getElementById('inputComplementClient')
 let neighborhoodClient = document.getElementById('inputNeighborhoodClient')
 let cityClient = document.getElementById('inputCityClient')
 let ufClient = document.getElementById('inputUfClient')
+//captura do id do cliente (usado no delete e update)
+let id = document.getElementById('idClient')
 
 // Buscar CEP
 function buscarCEP() {
@@ -188,6 +190,7 @@ function buscarCliente() {
             const dadosCliente = JSON.parse(dataClient)
             arrayClient = dadosCliente
             arrayClient.forEach((c) => {
+                id.value = c._id,
                 nameClient.value = c.nomeCliente,
                 cpfClient.value = c.cpfCliente,
                 emailClient.value = c.emailCliente,
@@ -235,6 +238,18 @@ api.setClient((args) => {
 
 // ==================================================fim CRUD Read =========================================================
 // =========================================================================================================================
+
+// =========================================================================================================================
+//=================================================CRUD DELETE
+function excluirCliente() {
+    console.log(id.value) // Passo 1: (receber )
+    api.deleteClient(id.value)// Passo 2: (enviar o id ao main) 
+}
+
+
+
+
+//=============================================================================================================================================================================FIM DO CRUD DELETE
 
 // =========================================================================================================================
 // ====================================================Reset form ==========================================================

@@ -20,6 +20,11 @@
     border: none;
     cursor: pointer;
 }
+
+/* Ocultar o campo id do cliente*/
+#idClient{
+    display:none
+}
 /*Logo*/
 #logo{
     position: fixed;

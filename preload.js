@@ -9,7 +9,6 @@ const { contextBridge, ipcRenderer } = require('electron')
 // enviar ao main um pedido para conexao do banco de dados e troca do icone no processo 
 ipcRenderer.send('db-connect')
 
-
 // expor (autorizar a comunicação entre processos)
 contextBridge.exposeInMainWorld('api', {
     clientWindow: () => ipcRenderer.send('client-window'),
@@ -23,8 +22,7 @@ contextBridge.exposeInMainWorld('api', {
     searchName: (name) => ipcRenderer.send('search-name', name),
     renderClient: (dataClient) => ipcRenderer.on('renderClient', dataClient),
     validateSearch: () => ipcRenderer.send('validate-search'),
-    buscarCliente: (args) => ipcRenderer.addListener('set-client', args)
+    setClient: (args) => ipcRenderer.on('set-client', args),
+    deleteClient: (id) =>ipcRenderer.send('delete-client',id)
+
 });
-//function dbStatus(message) {
- //   ipcRenderer.on('db-status', message)
-//}
