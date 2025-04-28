@@ -1,3 +1,17 @@
+// capturar os dados do input do formulario (passo 1 do fluxo)
+let frmClient = document.getElementById('frmClient')
+let nameClient = document.getElementById('inputNameClient')
+let cpfClient = document.getElementById('inputCPFClient')
+let emailClient = document.getElementById('inputEmailClient')
+let phoneClient = document.getElementById('inputPhoneClient')
+let cepClient = document.getElementById('inputCEPClient')
+let addressClient = document.getElementById('inputAddressClient')
+let numberClient = document.getElementById('inputNumberClient')
+let complementClient = document.getElementById('inputComplementClient')
+let neighborhoodClient = document.getElementById('inputNeighborhoodClient')
+let cityClient = document.getElementById('inputCityClient')
+let ufClient = document.getElementById('inputUfClient')
+
 // Buscar CEP
 function buscarCEP() {
     //console.log("teste do evento blur")
@@ -19,14 +33,11 @@ function buscarCEP() {
         .catch(error => console.log(error))
 }
 
-
 // capturar o foco na busca pelo nome do cliente
 // a constante foco obtem o elemento html (input) identificada como 'searchclient'
-
 const foco = document.getElementById('searchClient')
 
 // iniciar a janela de clientes alterando as propriedades de alguns elementos
-
 document.addEventListener('DOMContentLoaded', () => {
     // DEsativar os botoes
     btnUpdate.disabled = true
@@ -38,44 +49,26 @@ document.addEventListener('DOMContentLoaded', () => {
 //============================================================================================================================//======================================================Manipulação da tecla Enter
 
 // Função para manipular o evento da tecla enter
-function teclaEnter(event){
+function teclaEnter(event) {
     // se  tecla  Enter for pressionada 
-    if (event.key=== "Enter") {
+    if (event.key === "Enter") {
         event.preventDefault()// ignorar o comportamento padrao
         // associado o Enter a busca  do cliente
         buscarCliente()
     }
 }
 
+// "Escutar do Evento Tercla Enter"
+frmClient.addEventListener('keydown', teclaEnter)
 
 //=========================================================================================================================
 // =========================================Função para restaurar o padrao da tecla Enter (submit)
 
-function restaurarEnter(){
-    frmClient.removeEventListener('keydown',teclaEnter)
+function restaurarEnter() {
+    frmClient.removeEventListener('keydown', teclaEnter)
 }
 
-// "Escutar do Evento Tercla Enter"
-frmClient.addEventListener('keydown',teclaEnter)
-
-
 //============================================================================================================================//====================================================Fim Da Manipulação da Tecla Enter
-
-
-// capturar os dados do input do formulario (passo 1 do fluxo)
-let frmClient = document.getElementById('frmClient')
-let nameClient = document.getElementById('inputNameClient')
-let cpfClient = document.getElementById('inputCPFClient')
-let emailClient = document.getElementById('inputEmailClient')
-let phoneClient = document.getElementById('inputPhoneClient')
-let cepClient = document.getElementById('inputCEPClient')
-let addressClient = document.getElementById('inputAddressClient')
-let numberClient = document.getElementById('inputNumberClient')
-let complementClient = document.getElementById('inputComplementClient')
-let neighborhoodClient = document.getElementById('inputNeighborhoodClient')
-let cityClient = document.getElementById('inputCityClient')
-let ufClient = document.getElementById('inputUfClient')
-
 
 // === Função para aplicar máscara no CPF ===
 function aplicarMascaraCPF(campo) {
@@ -128,17 +121,9 @@ function validarCPF() {
 // Adicionar eventos para CPF
 cpfClient.addEventListener("input", () => aplicarMascaraCPF(cpfClient)); // Máscara ao digitar
 cpfClient.addEventListener("blur", validarCPF); // Validação ao perder o foco
+
 //============================================================================================================================
 // CRUD Create/Update ======================================================================================================
-
-
-
-
-
-
-
-
-
 
 //=============================================== Evento associado ao botão ==========================================
 //============================================(uso das validações do html)============================================
@@ -146,16 +131,16 @@ frmClient.addEventListener('submit', async (event) => {
     //evitar o comportamento padrao do submit que é enviar os dados do formulario e reiniciar o documento html
     event.preventDefault()
     // teste importante (recebimento dos dados do formulario - passo 1 do fluxo)
-    console.log(nameClient.value, 
+    console.log(nameClient.value,
         cpfClient.value,
         emailClient.value,
-        phoneClient.value, 
-        cepClient.value, 
-        addressClient.value, 
-        numberClient.value, 
-        complementClient.value, 
-        neighborhoodClient.value, 
-        cityClient.value, 
+        phoneClient.value,
+        cepClient.value,
+        addressClient.value,
+        numberClient.value,
+        complementClient.value,
+        neighborhoodClient.value,
+        cityClient.value,
         ufClient.value)
 
     // criar um objeto para armazenar os dados do cliente antes de enviar ao main
@@ -172,55 +157,57 @@ frmClient.addEventListener('submit', async (event) => {
         cityCli: cityClient.value,
         ufCli: ufClient.value
     }
-    api.newClient(client) 
-
-
-
+    api.newClient(client)
 })
-
 
 //============================================================================================================================
 // =================================================Fim CRUD Create/Update==================================================
 
-
 //==========================================================================================================================
 // ==================================================== CRUD Read ==========================================================
 
-function buscarCliente(){
+function buscarCliente() {
     //console.log("teste do botão buscar")
 
     // Passo 1: Capturar o nome do cliente
     let name = document.getElementById('searchClient').value
     console.log(name) // teste do passo 1
-    api.searchName(name) // passo 2: envio do nome ao main
-    // Recebimento dos dados do cliente 
-    api.renderClient((event, dataClient) => {
-        console.log(dataClient) // teste do passo 5
+    // validação do campo obrigatorio
+    // se o campo de busca não for preenchido
+    if (name === "") {
+        // enviar ao main um pedido para alertar o usúario
+        api.validateSearch()
+        foco.focus()
+    } else {
+        api.searchName(name) // passo 2: envio do nome ao main
+        // Recebimento dos dados do cliente 
+        api.renderClient((event, dataClient) => {
+            console.log(dataClient) // teste do passo 5
 
-        // Passo 6: renderizar os dados do cliente no formulario
-        // - Criar um vetor global para manipulação dos dados 
-        // - Criar uma constante para converter os dados recebidos que estão no formato string para o formato JSON (JSON.parse)
-        // usar o laço forEach para percorrer o vetor e setar o campo (caixas de texto) do formulario
-        const dadosCliente = JSON.parse(dataClient)
-        // atribuir ao vetor os dados do cliente
-        arrayClient = dadosCliente
-        // extrair os dados do cliente
-        arrayClient.forEach((c) => {
-            nameClient.value = c.nomeCliente,
-            cpfClient.value = c.cpfCliente,
-            emailClient.value = c.emailCliente,
-            phoneClient.value = c.foneCliente,    
-            cepClient.value = c.cepCliente,
-            addressClient.value = c.logradouroCliente,
-            numberClient.value = c.numeroCliente,
-            complementClient.value = c.complementoCliente,
-            neighborhoodClient.value = c.bairroCliente,
-            cityClient.value = c.cidadeCliente,
-            ufClient.value = c.ufCliente
+            // Passo 6: renderizar os dados do cliente no formulario
+            const dadosCliente = JSON.parse(dataClient)
+            arrayClient = dadosCliente
+            arrayClient.forEach((c) => {
+                nameClient.value = c.nomeCliente,
+                cpfClient.value = c.cpfCliente,
+                emailClient.value = c.emailCliente,
+                phoneClient.value = c.foneCliente,
+                cepClient.value = c.cepCliente,
+                addressClient.value = c.logradouroCliente,
+                numberClient.value = c.numeroCliente,
+                complementClient.value = c.complementoCliente,
+                neighborhoodClient.value = c.bairroCliente,
+                cityClient.value = c.cidadeCliente,
+                ufClient.value = c.ufCliente
+                // bloqueio do botao adicionar
+                btnCreate.disabled = true
+                // desbloqueio dos botoes editar e excluir
+                btnUpdate.disabled = false
+                btnDelete.disabled = false
+            })
         })
-    })
+    }
 }
-
 
 // Setar o cliente não cadastrado
 api.setClient((args) => {
@@ -232,8 +219,8 @@ api.setClient((args) => {
         cpfClient.focus()
         foco.value = ""
         cpfClient.value = campoBusca
-    } 
-    else if(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(campoBusca)){
+    }
+    else if (/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(campoBusca)) {
         cpfClient.focus()
         foco.value = ""
         cpfClient.value = campoBusca
@@ -246,23 +233,19 @@ api.setClient((args) => {
     }
 })
 
-
 // ==================================================fim CRUD Read =========================================================
 // =========================================================================================================================
 
-
-
-
-
 // =========================================================================================================================
 // ====================================================Reset form ==========================================================
-function resetForm(){
+
+function resetForm() {
     //Limpar os campos e resetar o formulario com as configurações pré definidas
     location.reload()
 }
 
 // Recebimento do pedido do main para resetar o formulario
-api.resetForm((args)=>{
+api.resetForm((args) => {
     resetForm()
 })
 
