@@ -143,24 +143,50 @@ frmClient.addEventListener('submit', async (event) => {
         complementClient.value,
         neighborhoodClient.value,
         cityClient.value,
-        ufClient.value)
+        ufClient.value, id.value)
 
-    // criar um objeto para armazenar os dados do cliente antes de enviar ao main
-    const client = {
-        nameCli: nameClient.value,
-        cpfCli: cpfClient.value,
-        emailCli: emailClient.value,
-        phoneCli: phoneClient.value,
-        cepCli: cepClient.value,
-        addressCli: addressClient.value,
-        numberCli: numberClient.value,
-        complementCli: complementClient.value,
-        neighborhoodCli: neighborhoodClient.value,
-        cityCli: cityClient.value,
-        ufCli: ufClient.value
+    // estratégia usada para reutilizar o submit para criar um novo cliente ou alterar os dados de um cliente
+    //se existir id significa que existe um cliente senão significa que é para adicionar um novo cliente
+    if (id.value === "") {
+        // executar o método para cadastrar um cliente
+        // criar um objeto para armazenar os dados do cliente antes de enviar ao main
+        const client = {
+            nameCli: nameClient.value,
+            cpfCli: cpfClient.value,
+            emailCli: emailClient.value,
+            phoneCli: phoneClient.value,
+            cepCli: cepClient.value,
+            addressCli: addressClient.value,
+            numberCli: numberClient.value,
+            complementCli: complementClient.value,
+            neighborhoodCli: neighborhoodClient.value,
+            cityCli: cityClient.value,
+            ufCli: ufClient.value
+        }
+        api.newClient(client)
+    } else {
+        // execuatr o método para alterar os dados do cliente
+
+        const client = {
+            idCli: id.value,
+            nameCli: nameClient.value,
+            cpfCli: cpfClient.value,
+            emailCli: emailClient.value,
+            phoneCli: phoneClient.value,
+            cepCli: cepClient.value,
+            addressCli: addressClient.value,
+            numberCli: numberClient.value,
+            complementCli: complementClient.value,
+            neighborhoodCli: neighborhoodClient.value,
+            cityCli: cityClient.value,
+            ufCli: ufClient.value
+        }
+        api.updateClient(client)
+
     }
-    api.newClient(client)
+
 })
+
 
 //============================================================================================================================
 // =================================================Fim CRUD Create/Update==================================================
@@ -191,17 +217,17 @@ function buscarCliente() {
             arrayClient = dadosCliente
             arrayClient.forEach((c) => {
                 id.value = c._id,
-                nameClient.value = c.nomeCliente,
-                cpfClient.value = c.cpfCliente,
-                emailClient.value = c.emailCliente,
-                phoneClient.value = c.foneCliente,
-                cepClient.value = c.cepCliente,
-                addressClient.value = c.logradouroCliente,
-                numberClient.value = c.numeroCliente,
-                complementClient.value = c.complementoCliente,
-                neighborhoodClient.value = c.bairroCliente,
-                cityClient.value = c.cidadeCliente,
-                ufClient.value = c.ufCliente
+                    nameClient.value = c.nomeCliente,
+                    cpfClient.value = c.cpfCliente,
+                    emailClient.value = c.emailCliente,
+                    phoneClient.value = c.foneCliente,
+                    cepClient.value = c.cepCliente,
+                    addressClient.value = c.logradouroCliente,
+                    numberClient.value = c.numeroCliente,
+                    complementClient.value = c.complementoCliente,
+                    neighborhoodClient.value = c.bairroCliente,
+                    cityClient.value = c.cidadeCliente,
+                    ufClient.value = c.ufCliente
                 // bloqueio do botao adicionar
                 btnCreate.disabled = true
                 // desbloqueio dos botoes editar e excluir

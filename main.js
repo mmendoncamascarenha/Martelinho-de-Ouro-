@@ -136,7 +136,7 @@ ipcMain.on('new-carro', async (event, carro) => {
 
 
 
-// Relatório de Clientes
+//========================================================================================================================-=======================================================Relatório de Clientes
 async function relatorioClientes() {
   try {
     const clientes = await clientModel.find().sort({ nomeCliente: 1 });
@@ -158,7 +158,8 @@ async function relatorioClientes() {
 
 // Template do menu
 const template = [
-  { label: 'Cadastro', submenu: [
+  {
+    label: 'Cadastro', submenu: [
       { label: 'Cadastro de Clientes', click: () => createChildWindow('clientes') },
       { label: 'Cadastro de Veículos', click: () => createChildWindow('carros') },
       { label: 'OS', click: () => createChildWindow('OS') },
@@ -166,13 +167,15 @@ const template = [
       { label: 'Sair', click: () => app.quit(), accelerator: 'Alt+F4' }
     ]
   },
-  { label: 'Relatórios', submenu: [
+  {
+    label: 'Relatórios', submenu: [
       { label: 'Clientes', click: () => relatorioClientes() },
       { label: 'OS abertas' },
       { label: 'OS concluídas' }
     ]
   },
-  { label: 'Ferramentas', submenu: [
+  {
+    label: 'Ferramentas', submenu: [
       { label: 'Aplicar zoom', role: 'zoomIn' },
       { label: 'Reduzir', role: 'zoomOut' },
       { label: 'Restaurar zoom', role: 'resetZoom' },
@@ -181,7 +184,7 @@ const template = [
       { label: 'Ferramentas do Desenvolvedor', role: 'toggleDevTools' }
     ]
   },
-  { label: 'Ajuda', submenu: [ { label: 'Sobre', click: () => createChildWindow('sobre', 360, 200) } ] }
+  { label: 'Ajuda', submenu: [{ label: 'Sobre', click: () => createChildWindow('sobre', 360, 200) }] }
 ];
 
 app.whenReady().then(() => {
@@ -243,7 +246,7 @@ async function relatorioClientes() {
     //desenhar uma linha 
     doc.setLineWidth(0.5) // expessura da linha 
     doc.line(10, y, 200, y) // 10 (inicio) ---- 200 fim
-   
+
     // renderizar os clientes cadastrados no banco
     y += 10 // espaçamento da linha 
     // percorrer
@@ -260,7 +263,7 @@ async function relatorioClientes() {
         //desenhar uma linha 
         doc.setLineWidth(0.5) // expessura da linha 
         doc.line(10, y, 200, y) // 10 (inicio) ---- 200 fim
-        y += 10 
+        y += 10
       }
       doc.text(c.nomeCliente, 14, y)
       doc.text(c.foneCliente, 80, y)
@@ -270,10 +273,10 @@ async function relatorioClientes() {
 
     // Adicionar numeração automatica 
     const paginas = doc.internal.getNumberOfPages()
-    for (let i = 1; i <= paginas; i++){
+    for (let i = 1; i <= paginas; i++) {
       doc.setPage(i)
       doc.setFontSize(10)
-      doc.text(`Página ${i} de ${paginas}`, 105, 290, {align:'center'})
+      doc.text(`Página ${i} de ${paginas}`, 105, 290, { align: 'center' })
     }
 
     // Definir o caminho do arquivo temporario
@@ -308,30 +311,30 @@ ipcMain.on('validate-search', () => {
 })
 
 
-ipcMain.on('search-name', async(event, name) => {
+ipcMain.on('search-name', async (event, name) => {
   //console.log("teste IPC search-name") Dica para testar o funcionamento
   //console.log(name) // teste do passo 2 (importante)
 
   // passos 3 e 4 busca dos dados do cliente do banco
   //find({nomeCliente: name}) - busca pelo nome
   //RegExp(name, i) - (insensitive / Ignorar maiúsculo ou minúsculo)
-  try{
+  try {
     /*const dataClient = await clientModel.find({
       nomeCliente: new RegExp(name, 'i')
     })*/
-      const dataClient  = await clientModel.find({
-        $or: [
-          { nomeCliente: new RegExp(name, 'i') },
-          { cpfCliente: new RegExp(name, 'i') }
-        ]
-      })
+    const dataClient = await clientModel.find({
+      $or: [
+        { nomeCliente: new RegExp(name, 'i') },
+        { cpfCliente: new RegExp(name, 'i') }
+      ]
+    })
     console.log(dataClient) // teste passo 3 e 4 (Importante!)
 
     // melhoria d eexperiencia do usuario (se o cliente nao estiver cadastrado, alertar o usuario e questionar se ele
     // quer cadastrar este novo cliente. Se não quiser cadastrar, limpar os campos, se quiser cadastrar recortar o nome do cliente do campo de busca e colar no campo nome)
 
     // se o vetor estiver vazio []
-    if(dataClient.length === 0) {
+    if (dataClient.length === 0) {
       dialog.showMessageBox({
         type: 'warning',
         title: "Aviso",
@@ -352,8 +355,8 @@ ipcMain.on('search-name', async(event, name) => {
     // OBS: IPC só trabalha com string, então é necessario converter o JSON para string JSON.stringify(dataClient)
     event.reply('renderClient', JSON.stringify(dataClient))
 
-  }catch (error) {
-    console.log (error)
+  } catch (error) {
+    console.log(error)
   }
 })
 
@@ -363,23 +366,23 @@ ipcMain.on('search-name', async(event, name) => {
 
 //==========================================================================================================================
 //===================================================== CRUD DELETE
-ipcMain.on('delete-client', async(event,id) => {
+ipcMain.on('delete-client', async (event, id) => {
   console.log(id) // teste do passo 2 (recebimento do id)
   try {
     //importante - confirmar a exclusao
     // client é o nome da variavel que representa a janela
-    const {response} = await dialog.showMessageBox(client, {
+    const { response } = await dialog.showMessageBox(client, {
       type: 'warning',
       title: "Atenção!",
       message: "Desejar excluir este cliente?\nEsta ação não poderá ser desfeita.",
-      buttons: ['Cancelar','Excluir'] //[0, 1]
+      buttons: ['Cancelar', 'Excluir'] //[0, 1]
     })
-    if(response === 1){
+    if (response === 1) {
       // Passo 3: Excluir o registro do cliente
       const delClient = await clientModel.findByIdAndDelete(id)
       event.reply('reset-form')
     }
-  } catch (error){
+  } catch (error) {
     console.log(error)
 
   }
@@ -389,3 +392,64 @@ ipcMain.on('delete-client', async(event,id) => {
 
 //==========================================================================================================================
 //=================================================== FIM DO CRUD DELETE
+
+
+
+//==========================================================================================================================
+//=================================================== CRUD Update
+ipcMain.on('update-client', async (event, client) => {
+  console.log(client) // teste importante 
+  try {
+    const updateClient = await clientModel.findByIdAndUpdate(
+      client.idCli,
+      {
+        nomeCliente: client.nameCli,
+        cpfCliente: client.cpfCli,
+        emailCliente: client.emailCli,
+        foneCliente: client.phoneCli,
+        cepCliente: client.cepCli,
+        logradouroCliente: client.addressCli,
+        numeroCliente: client.numberCli,
+        complementoCliente: client.complementCli,
+        bairroCliente: client.neighborhoodCli,
+        cidadeCliente: client.cityCli,
+        ufCliente: client.ufCli
+      },
+      {
+        new: true
+      }
+    )
+
+    // confirmação 
+    dialog.showMessageBox({ 
+        type: 'info', 
+        title: "Aviso", 
+        message: "Dados do Cliente alterados com sucesso", 
+        buttons: ['OK'] 
+  }).then((result) => {
+    if(result.response === 0) {
+      //
+      //
+      event.reply('reset-form')
+    }
+  })
+    
+
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+//==========================================================================================================================
+//=================================================== FIM DO CRUD UPDATE
