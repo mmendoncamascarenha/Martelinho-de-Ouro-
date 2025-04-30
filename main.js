@@ -86,7 +86,11 @@ ipcMain.on('new-client', async (event, client) => {
       ufCliente: client.ufCli
     });
     await newClient.save();
-    dialog.showMessageBox({ type: 'info', title: "Aviso", message: "Cliente adicionado com sucesso", buttons: ['OK'] });
+    dialog.showMessageBox({ 
+      type: 'info', 
+      title: "Aviso", 
+      message: "Cliente adicionado com sucesso", 
+      buttons: ['OK'] });
     event.reply('reset-form');
   } catch (error) {
     if (error.code === 11000) {
@@ -108,7 +112,10 @@ ipcMain.on('new-os', async (event, os) => {
       statusOS: os.staOS
     });
     await newOS.save();
-    dialog.showMessageBox({ type: 'info', title: "Aviso", message: "Ordem de Serviço adicionada com sucesso", buttons: ['OK'] });
+    dialog.showMessageBox({ 
+      type: 'info', title: "Aviso", 
+      message: "Ordem de Serviço adicionada com sucesso", 
+      buttons: ['OK'] });
     event.reply('reset-form');
   } catch (error) {
     console.log(error);
@@ -422,13 +429,14 @@ ipcMain.on('update-client', async (event, client) => {
 
     // confirmação 
     dialog.showMessageBox({ 
+      // customização
         type: 'info', 
         title: "Aviso", 
         message: "Dados do Cliente alterados com sucesso", 
         buttons: ['OK'] 
   }).then((result) => {
     if(result.response === 0) {
-      //
+      // enviar um pedido para o redenrer
       //
       event.reply('reset-form')
     }
