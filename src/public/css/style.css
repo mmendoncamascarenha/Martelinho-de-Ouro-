@@ -40,14 +40,15 @@ footer {
     background-color: #122629;
     color: white;
     /*text-align: center;*/
-    padding: 8px;
+    padding: 2px;
     position: fixed;
     bottom: 0;
     width: 100%;
+    /*height: 40px;*/
     font-size: 10px;
     display: flex;
     justify-content: space-between;
-    padding: 5px;
+   
 
     /*width: 100%;
     height: 55px;   
@@ -70,5 +71,10 @@ footer span {
     font-weight: bold;
 }
 body {
-    background-color: #878582;
+    background-color: #d1bcba;
+    
+}
+
+body .sobree{
+    line-height: 0.8;
 }

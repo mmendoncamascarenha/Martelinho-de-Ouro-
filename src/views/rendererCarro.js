@@ -5,7 +5,7 @@ let markCar = document.getElementById('inputMarkCar')
 let modelCar = document.getElementById('inputModelCar')
 let yearCar = document.getElementById('inputYearCar')
 let colorCar = document.getElementById('inputColorCar')
-let descriptionCar = document.getElementById('inputDescriptionCar')
+//let descriptionCar = document.getElementById('inputDescriptionCar')
 
 // Evento de submit
 frmCar.addEventListener('submit', async (event) => {
@@ -16,7 +16,7 @@ frmCar.addEventListener('submit', async (event) => {
         modelCar.value,
         yearCar.value,
         colorCar.value,
-        descriptionCar.value
+        //descriptionCar.value
     )
 
     const car = {
@@ -25,7 +25,7 @@ frmCar.addEventListener('submit', async (event) => {
         modeloCarro: modelCar.value,
         anoCarro: yearCar.value,
         corCarro: colorCar.value,
-        descricaoCarro: descriptionCar.value
+        //descricaoCarro: descriptionCar.value
     }
     api.newCar(car)
 })

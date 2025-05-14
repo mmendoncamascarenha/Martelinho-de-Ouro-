@@ -24,9 +24,9 @@ const carroSchema = new Schema ({
     corCarro:{
         type: String
     },
-    descricaoCarro:{
-        type: String,
-    },
+    //descricaoCarro:{
+       // type: String,
+   //},
 }, {versionKey: false})  // nao versionaros os dados armazenados
 
 // exportar para o main o modelo de dados

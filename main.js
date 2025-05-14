@@ -101,26 +101,43 @@ ipcMain.on('new-client', async (event, client) => {
 });
 
 // CRUD - OS
-ipcMain.on('new-os', async (event, os) => {
+ipcMain.on('new-os', async (event, OS) => {
+  // Importante! Teste de recebimento dos dados do cliente
+  console.log(OS)
+  // console.log("teste")
+  // cadastrar a estrutura de dados no banco de dados usando a classe modelo. Atenção!! os atributos precisam ser identicos ao modelo de dados Clientes.js eos valores sao definidos pelo conteudo do objeto cliente 
   try {
     const newOS = new osModel({
-      descricaoOS: os.desOS,
-      materialOS: os.matOS,
-      dataOS: os.datOS,
-      orcamentoOS: os.orcOS,
-      pagamentoOS: os.pagOS,
-      statusOS: os.staOS
-    });
-    await newOS.save();
-    dialog.showMessageBox({ 
-      type: 'info', title: "Aviso", 
-      message: "Ordem de Serviço adicionada com sucesso", 
-      buttons: ['OK'] });
-    event.reply('reset-form');
+      descricaoOS: OS.desOS,
+      materialOS: OS.matOS,
+      dataOS: OS.datOS,
+      orcamentoOS: OS.orcOS,
+      pagamentoOS: OS.pagOS,
+      statusOS: OS.staOS
+    })
+    // salvar os dados do cliente no banco de dados
+    await newOS.save()
+    //Mensagem de confirmação
+    dialog.showMessageBox({
+      //Customização
+      type: 'info',
+      title: "Aviso",
+      message: "OS adicionada com sucesso",
+      buttons: ['OK']
+    }).then((result) => {
+      //ação ao precionar o botão 
+      if (result.response === 0) {
+        // enviar um pedido para o renderizador limpar os campos e resetar as 
+        // configurações pré definidas (rótulo) preload.js
+        event.reply('reset-form')
+      }
+
+    })
+
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-});
+})
 
 
 // CRUD - CARRO
@@ -461,3 +478,62 @@ ipcMain.on('update-client', async (event, client) => {
 
 //==========================================================================================================================
 //=================================================== FIM DO CRUD UPDATE
+
+
+
+//************************************************************/
+//*******************  Ordem de Serviço  *********************/
+//************************************************************/
+
+
+// ============================================================
+// == Buscar OS ===============================================
+
+ipcMain.on('search-os', (event) => {
+  //console.log("teste: busca OS")
+  prompt({
+    title: 'Buscar OS',
+    label: 'Digite o número da OS:',
+    inputAttrs: {
+      type: 'text'
+    },
+    type: 'input',
+    width: 400,
+    height: 200
+  }).then((result) => {
+    if (result !== null) {
+      console.log(result)
+      //buscar a os no banco pesquisando pelo valor do result (número da OS)
+
+    }
+  })
+})
+
+// == Fim - Buscar OS =========================================
+// ============================================================
+
+
+
+
+// ============================================================================================================
+// == Buscar cliente para vincular na OS (buscar estilo Google) ===============================================
+
+ipcMain.on('search-clients', async (event) => {
+  try {
+    //buscar no banco os clientes pelo nome em ordem alfabética
+    const clients = await clientModel.find().sort({
+      nomeCliente: 1
+    })
+
+    ///console.log(clients) // teste do passo 2
+    // passo 3: Envio dos clientes para o renderizador
+    // OBS: não esquecer de converter para string
+    event.reply('list-clients', JSON.stringify(clients))
+
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+// == Fim - Buscar cliente para vincular na OS (buscar estilo Google) =========================================
+// ============================================================================================================

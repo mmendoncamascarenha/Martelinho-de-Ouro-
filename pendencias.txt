@@ -1,8 +1,8 @@
 layout da pagina inicial
 e tela sobre
 buscar um cliente que nao existe/ cpf
-tirar a descrição do cadastro de carros e diminuir a janela
+tirar a descrição do cadastro de carros e diminuir a janela -
 diagnostico na tela de os
 campo para cadastrar um mecanico
-tirar a data os
+tirar a data os - FEITO
 campo observaçoes
