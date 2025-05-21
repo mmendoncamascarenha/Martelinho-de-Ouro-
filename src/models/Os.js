@@ -1,33 +1,49 @@
 /**
- * Modelo de dados para construção de coleções ("tabelas")
+ * Modelo de dados para construção das coleções("tabelas")
+ * OS
  */
 
-// Importação dos recursos do framework mongoose 
+// importação dos recursos do framework mongoose
 const { model, Schema } = require('mongoose')
 
 // criação da estrutura da coleção OS
-const osSchema = new Schema ({
-    descricaoOS: {
-        type: String
+const osSchema = new Schema({
+    dataEntrada: {
+        type: Date,
+        default: Date.now
     },
-    materialOS: {
-        type: String
-    },
-    dataOS: {
-        type: String
-    },
-    orcamentoOS: {
-        type: String
-    },
-    pagamentoOS: {
-        type: String
+    idCliente: {
+        type: String,        
     },
     statusOS: {
         type: String
-    }
-}, {versionKey: false}) // não versionar os dados armazenados 
+    },
+    computador: {
+        type: String
+    },
+    serie: {
+        type: String        
+    },
+    problema: {
+        type: String  
+    },
+    observacao: {
+        type: String
+    },
+    tecnico: {
+        type: String  
+    },
+    diagnostico: {
+        type: String  
+    },
+    pecas: {
+        type: String 
+    },
+    valor: {
+        type: String 
+    },
+}, {versionKey: false}) //não versionar os dados armazenados
 
-// exportar para o main o moulo de dados
-//OBS: Clientes será o nome da coleção "tabelas"
-
+// exportar para o main o modelo de dados
+// OBS: OS 
 module.exports = model('OS', osSchema)
