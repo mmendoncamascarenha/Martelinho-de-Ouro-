@@ -14,6 +14,7 @@ let dataOS = document.getElementById('inputconclusãoClient')
 let orcamentoOS = document.getElementById('inputOrcamentoClient')
 let pagamentoOS = document.getElementById('inputpagamentoClient')
 let statusOS = document.getElementById('osStatus')
+let idClient = document.getElementById('inputIdClient')
 
 // =======================================================
 // == CRUD Creat/Update ==================================
@@ -22,21 +23,33 @@ let statusOS = document.getElementById('osStatus')
 frmOS.addEventListener('submit', async (event) => {
     //evitar o comportamento padrao do submit que é enviar os dados do formulario e reiniciar o documento html
     event.preventDefault()
-    //Teste importante ( recebimento dos dados do formulario - passo 1 do fluxo)
-    console.log(descricaoOS.value, materialOS.value, dataOS.value, orcamentoOS.value, pagamentoOS.value, statusOS.value)
+    // validação do campo obrigatório 'idClient' (validação html não funciona via html para campos desativados)
+    if (idClient.value === "") {
+        api.validateClient()
+    } else {
+        //Teste importante ( recebimento dos dados do formulario - passo 1 do fluxo)
+        console.log(idOS.value, idClient.value, descricaoOS.value, materialOS.value, dataOS.value, orcamentoOS.value, pagamentoOS.value, statusOS.value)
+        if (idOS.value === "") {
+            //Gerar OS
+            // Criar um objeto para armazenar os dados do cliente amtes de enviar ao main
+            const OS = {
+                desOS: descricaoOS.value,
+                matOS: materialOS.value,
+                datOS: dataOS.value,
+                orcOS: orcamentoOS.value,
+                pagOS: pagamentoOS.value,
+                staOS: statusOS.value,
+                idCli: idClient.value
+            }
+            
+            // Enviar ao main o objeto client - (Passo 2: fluxo)
+            // uso do preload.js
+            api.newOS(OS)
+        } else {
+            //Editar OS
 
-    // Criar um objeto para armazenar os dados do cliente amtes de enviar ao main
-    const OS = {
-        desOS: descricaoOS.value,
-        matOS: materialOS.value,
-        datOS: dataOS.value,
-        orcOS: orcamentoOS.value,
-        pagOS: pagamentoOS.value,
-        staOS: statusOS.value
+        }
     }
-    // Enviar ao main o objeto client - (Passo 2: fluxo)
-    // uso do preload.js
-    api.newOS(OS)
 })
 
 // == fim CRUD Creat/Update ==============================
@@ -145,10 +158,75 @@ document.addEventListener('click', (event) => {
 // =======================================================
 // == Buscar OS =========================================
 
-function inputOS() {
+function findOS() {
     //console.log("teste")
     api.searchOS()
 }
 
+api.renderOS((event, dataOS) => {
+    console.log(dataOS)
+    const os = JSON.parse(dataOS)
+    // preencher os campos com os dados da OS
+    idOS.value = os._id
+    // formatar data:
+    const data = new Date(os.dataEntrada)
+    const formatada = data.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    })
+    dateOS.value = formatada
+    IdC.value = os.idCliente
+    descricaoOS.value = os.descricao
+    materialOS.value = os.material
+    dataOS.value = os.data
+    orcamentoOS.value = os.orcamento
+    pagamentoOS.value = os.pagamento
+    statusOS.value = os.status
+    
+})
 // == Fim - Buscar OS ===================================
 // =======================================================
+
+
+// =======================================================
+// == Reset form =========================================
+function resetForm() {
+    //Limpar os campos e resetar o formulario com as configurações pré definidas
+    location.reload()
+}
+
+// Recebimento do pedido do main para resetar o formulario
+api.resetForm((args) => {
+    resetForm()
+})
+
+
+// == Fim - Reset form ===================================
+// =======================================================
+
+
+
+
+// IMPRIMIR OS ===============================================================================================
+//============================================================================================================
+function generateOS(){
+    api.printOS()
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  //===========================================================================================================
+  // FIM IMPRIMIR OS ===========================================================================================

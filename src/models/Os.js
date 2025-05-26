@@ -42,6 +42,9 @@ const osSchema = new Schema({
     valor: {
         type: String 
     },
+    pagamento: {    
+        type: String
+    }
 }, {versionKey: false}) //não versionar os dados armazenados
 
 // exportar para o main o modelo de dados
