@@ -4,8 +4,10 @@ const { app, BrowserWindow, nativeTheme, Menu, ipcMain, dialog, shell } = requir
 const path = require('node:path');
 const fs = require('fs');
 const { conectar, desconectar } = require('./database');
+// importar mongoose (validação do id na OS)
+const mongoose = require('mongoose')
 const clientModel = require('./src/models/Clientes.js');
-const carroModel = require('./src/models/Carro.js'); // <- isso aqui!
+const carroModel = require('./src/models/Carro.js'); 
 const osModel = require('./src/models/Os.js');
 const { jsPDF } = require('jspdf');
 const prompt = require('electron-prompt');
@@ -109,10 +111,12 @@ ipcMain.on('new-os', async (event, OS) => {
       idCliente: OS.idCliente_OS,   // id do cliente
       problema: OS.desOS,           // descrição do problema
       pecas: OS.matOS,              // material/peças usados
+      dataConclusao: OS.conOs,
       dataEntrada: OS.datOS,        // data da OS
       valor: OS.orcOS,              // orçamento
       pagamento: OS.pagOS,          // forma pagamento
-      statusOS: OS.staOS            // status da OS
+      statusOS: OS.staOS,            // status da OS
+
     })
     
     await newOS.save()
@@ -533,7 +537,7 @@ ipcMain.on('validate-client', (event) => {
       }
   })
 })
-
+/*
 // recebimento do objeto que contem os dados do cliente
 ipcMain.on('new-os', async (event, os) => {
   // Importante! Teste de recebimento dos dados do cliente
@@ -573,6 +577,7 @@ ipcMain.on('new-os', async (event, os) => {
     console.log(error)
   }
 })
+  */
 // -- Fim - OS - CRUD Create ===========
 // ==========================================
 
@@ -629,11 +634,61 @@ ipcMain.on('search-os', async (event) => {
 // == Fim - Buscar OS =========================================
 // ============================================================
 
+
+// ============================================================
+// == Editar OS - CRUD Update =================================
+
+ipcMain.on('update-os', async (event, os) => {
+  //importante! teste de recebimento dos dados da os (passo 2)
+  console.log(os)
+  // Alterar os dados da OS no banco de dados MongoDB
+  try {
+      // criar uma nova de estrutura de dados usando a classe modelo. Atenção! Os atributos precisam ser idênticos ao modelo de dados OS.js e os valores são definidos pelo conteúdo do objeto os
+      const updateOS = await osModel.findByIdAndUpdate(
+          os.id_OS,
+          {
+              idCliente: os.idClient_OS,
+              statusOS: os.stat_OS,
+              computador: os.computer_OS,
+              serie: os.serial_OS,
+              problema: os.problem_OS,
+              observacao: os.obs_OS,
+              tecnico: os.specialist_OS,
+              diagnostico: os.diagnosis_OS,
+              pecas: os.parts_OS,
+              valor: os.total_OS
+          },
+          {
+              new: true
+          }
+      )
+      // Mensagem de confirmação
+      dialog.showMessageBox({
+          //customização
+          type: 'info',
+          title: "Aviso",
+          message: "Dados da OS alterados com sucesso",
+          buttons: ['OK']
+      }).then((result) => {
+          //ação ao pressionar o botão (result = 0)
+          if (result.response === 0) {
+              //enviar um pedido para o renderizador limpar os campos e resetar as configurações pré definidas (rótulo 'reset-form' do preload.js
+              event.reply('reset-form')
+          }
+      })
+  } catch (error) {
+      console.log(error)
+  }
+})
+
+// == Fim Editar OS - CRUD Update =============================
+// ============================================================
+
 // IMPRIMIR OS ==========================================================================================================
 //=======================================================================================================================
 ipcMain.on('print-os', async (event) => {
   prompt({
-      title: 'IMPRIMIR OS',
+      title: 'Imprimir OS',
       label: 'Digite o número da OS:',
       inputAttrs: {
           type: 'text'
@@ -675,3 +730,167 @@ ipcMain.on('print-os', async (event) => {
       }
   })
 })
+
+// impressão via botão imprimir
+ipcMain.on('print-os', async (event) => {
+  prompt({
+      title: 'Imprimir OS',
+      label: 'Digite o número da OS:',
+      inputAttrs: {
+          type: 'text'
+      },
+      type: 'input',
+      width: 400,
+      height: 200
+  }).then(async (result) => {
+      // buscar OS pelo id (verificar formato usando o mongoose - importar no início do main)
+      if (result !== null) {
+          // Verificar se o ID é válido (uso do mongoose - não esquecer de importar)
+          if (mongoose.Types.ObjectId.isValid(result)) {
+              try {
+                  // teste do botão imprimir
+                  //console.log("imprimir OS")
+                  const dataOS = await osModel.findById(result)
+                  if (dataOS && dataOS !== null) {
+                      console.log(dataOS) // teste importante
+                      // extrair os dados do cliente de acordo com o idCliente vinculado a OS
+                      const dataClient = await clientModel.find({
+                          _id: dataOS.idCliente
+                      })
+                      console.log(dataClient)
+                      // impressão (documento PDF) com os dados da OS, do cliente e termos do serviço (uso do jspdf)
+
+                      // formatação do documento pdf
+                      const doc = new jsPDF('p', 'mm', 'a4')
+                      const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logomartelo (2).png')
+                      const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' })
+                      doc.addImage(imageBase64, 'PNG', 5, 8)
+                      doc.setFontSize(18)
+                      doc.text("OS:", 14, 45) //x=14, y=45
+                      doc.setFontSize(12)
+
+                      // Extração dos dados do cliente vinculado a OS
+                      dataClient.forEach((c) => {
+                          doc.text("Cliente:", 14, 65),
+                              doc.text(c.nomeCliente, 34, 65),
+                              doc.text(c.foneCliente, 85, 65),
+                              doc.text(c.emailCliente || "N/A", 130, 65)
+                          //...
+                      })
+
+                      // Extração dos dados da OS                        
+                      doc.text(String(dataOS.computador), 14, 85)
+                      doc.text(String(dataOS.problema), 80, 85)
+
+                      // Texto do termo de serviço
+                      doc.setFontSize(10)
+                      const termo = `
+  Termo de Serviço e Garantia
+  
+  O cliente autoriza a realização dos serviços técnicos descritos nesta ordem, ciente de que:
+  
+  - Diagnóstico e orçamento são gratuitos apenas se o serviço for aprovado. Caso contrário, poderá ser cobrada taxa de análise.
+  - Peças substituídas poderão ser retidas para descarte ou devolvidas mediante solicitação no ato do serviço.
+  - A garantia dos serviços prestados é de 90 dias, conforme Art. 26 do Código de Defesa do Consumidor, e cobre exclusivamente o reparo executado ou peça trocada, desde que o equipamento não tenha sido violado por terceiros.
+  - Não nos responsabilizamos por dados armazenados. Recomenda-se o backup prévio.
+  - Equipamentos não retirados em até 90 dias após a conclusão estarão sujeitos a cobrança de armazenagem ou descarte, conforme Art. 1.275 do Código Civil.
+  - O cliente declara estar ciente e de acordo com os termos acima.`
+
+                      // Inserir o termo no PDF
+                      doc.text(termo, 14, 150, { maxWidth: 180 }) // x=14, y=60, largura máxima para quebrar o texto automaticamente
+
+                      // Definir o caminho do arquivo temporário e nome do arquivo
+                      const tempDir = app.getPath('temp')
+                      const filePath = path.join(tempDir, 'os.pdf')
+                      // salvar temporariamente o arquivo
+                      doc.save(filePath)
+                      // abrir o arquivo no aplicativo padrão de leitura de pdf do computador do usuário
+                      shell.openPath(filePath)
+                  } else {
+                      dialog.showMessageBox({
+                          type: 'warning',
+                          title: "Aviso!",
+                          message: "OS não encontrada",
+                          buttons: ['OK']
+                      })
+                  }
+
+              } catch (error) {
+                  console.log(error)
+              }
+          } else {
+              dialog.showMessageBox({
+                  type: 'error',
+                  title: "Atenção!",
+                  message: "Código da OS inválido.\nVerifique e tente novamente.",
+                  buttons: ['OK']
+              })
+          }
+      }
+  })
+})
+
+async function printOS(osId) {
+  try {
+      const dataOS = await osModel.findById(osId)
+
+      const dataClient = await clientModel.find({
+          _id: dataOS.idCliente
+      })
+      console.log(dataClient)
+      // impressão (documento PDF) com os dados da OS, do cliente e termos do serviço (uso do jspdf)
+
+      // formatação do documento pdf
+      const doc = new jsPDF('p', 'mm', 'a4')
+      const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logo.png')
+      const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' })
+      doc.addImage(imageBase64, 'PNG', 5, 8)
+      doc.setFontSize(18)
+      doc.text("OS:", 14, 45) //x=14, y=45
+      doc.setFontSize(12)
+
+      // Extração dos dados do cliente vinculado a OS
+      dataClient.forEach((c) => {
+          doc.text("Cliente:", 14, 65),
+              doc.text(c.nomeCliente, 34, 65),
+              doc.text(c.foneCliente, 85, 65),
+              doc.text(c.emailCliente || "N/A", 130, 65)
+          //...
+      })
+
+      // Extração dos dados da OS                        
+      doc.text(String(dataOS.computador), 14, 85)
+      doc.text(String(dataOS.problema), 80, 85)
+
+      // Texto do termo de serviço
+      doc.setFontSize(10)
+      const termo = `
+Termo de Serviço e Garantia
+
+O cliente autoriza a realização dos serviços técnicos descritos nesta ordem, ciente de que:
+
+- Diagnóstico e orçamento são gratuitos apenas se o serviço for aprovado. Caso contrário, poderá ser cobrada taxa de análise.
+- Peças substituídas poderão ser retidas para descarte ou devolvidas mediante solicitação no ato do serviço.
+- A garantia dos serviços prestados é de 90 dias, conforme Art. 26 do Código de Defesa do Consumidor, e cobre exclusivamente o reparo executado ou peça trocada, desde que o equipamento não tenha sido violado por terceiros.
+- Não nos responsabilizamos por dados armazenados. Recomenda-se o backup prévio.
+- Equipamentos não retirados em até 90 dias após a conclusão estarão sujeitos a cobrança de armazenagem ou descarte, conforme Art. 1.275 do Código Civil.
+- O cliente declara estar ciente e de acordo com os termos acima.`
+
+      // Inserir o termo no PDF
+      doc.text(termo, 14, 150, { maxWidth: 180 }) // x=14, y=60, largura máxima para quebrar o texto automaticamente
+
+      // Definir o caminho do arquivo temporário e nome do arquivo
+      const tempDir = app.getPath('temp')
+      const filePath = path.join(tempDir, 'os.pdf')
+      // salvar temporariamente o arquivo
+      doc.save(filePath)
+      // abrir o arquivo no aplicativo padrão de leitura de pdf do computador do usuário
+      shell.openPath(filePath)
+
+  } catch (error) {
+      console.log(error)
+  }
+}
+
+// Fim - Impressão de OS ======================================
+// ============================================================

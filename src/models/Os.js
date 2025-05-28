@@ -12,6 +12,9 @@ const osSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    dataConclusao: {
+        type: String,
+    },
     idCliente: {
         type: String,        
     },
