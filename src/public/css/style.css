@@ -1,7 +1,4 @@
 @charset "utf-8";
-
-/*************************************************Estilo botões - Botões da Tela Principal******************************************/
-
 .button img {
     margin: 50px 15px 25px 15px;
     padding: 5px;
@@ -12,7 +9,6 @@
 
 
 }
-/* Botão RESET*/
 #btnReset{
     width: 45px;
     height: 50px;
@@ -20,12 +16,9 @@
     border: none;
     cursor: pointer;
 }
-
-/* Ocultar o campo id do cliente*/
 #idClient{
     display:none
 }
-/*Logo*/
 #logo{
     position: fixed;
     bottom: 40px;
@@ -33,55 +26,31 @@
     border: none;
     cursor: none;
 }
-
-
 footer {
-    
     background-color: #122629;
     color: white;
-    /*text-align: center;*/
     padding: 2px;
     position: fixed;
     bottom: 0;
     width: 100%;
-    /*height: 40px;*/
     font-size: 10px;
     display: flex;
     justify-content: space-between;
-   
-
-    /*width: 100%;
-    height: 55px;   
-    background-color: #122629;
-    color: white;
-    position: fixed;
-    bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    padding: 5px;*/
 }
-
 footer p {
     margin: 0;
     font-family: sans-serif;
-
 }
-
 footer span {
     font-weight: bold;
 }
 body {
-    background-color: #d1bcba;
-    
+    background-color: #d1bcba;  
 }
-
 body .sobree{
     line-height: 0.8;
 }
-
 #dataAtual {
-    font-size: 24px; /* Aumente para 40px, 48px, etc se quiser mais */
-    font-weight: bold;
-    /*color: #333; opcional, só pra deixar mais visível */
-  }
-  
+    font-size: 24px; 
+    font-weight: bold;  
+}
