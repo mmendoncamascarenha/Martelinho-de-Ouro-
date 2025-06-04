@@ -15,13 +15,14 @@ const btnDelete = document.getElementById('btnDelete')
 let frmOS = document.getElementById('frmOS')
 let descricaoOS = document.getElementById('serviceDescription')
 let materialOS = document.getElementById('inputPecasClient')
-let dataOS = document.getElementById('inputConclusaoClient')
+let dataConclusao = document.getElementById('inputConclusaoClient')
 let orcamentoOS = document.getElementById('inputOrcamentoClient')
 let pagamentoOS = document.getElementById('inputPagamentoClient')
 let statusOS = document.getElementById('osStatus')
 let idClient = document.getElementById('inputIdClient')
 let idOS = document.getElementById('txtOs')
 const dateOS = document.getElementById('txtData')
+
 
 
 // ======================================================================================================================
@@ -33,7 +34,7 @@ frmOS.addEventListener('submit', async (event) => {
     if (idClient.value === "") {
         api.validateClient()
     } else {
-        console.log(idOS.value, idClient.value, descricaoOS.value, materialOS.value, dataOS.value, orcamentoOS.value, pagamentoOS.value, statusOS.value, )
+        console.log(idOS.value, idClient.value, descricaoOS.value, materialOS.value, dataConclusao.value, orcamentoOS.value, pagamentoOS.value, statusOS.value, )
         
         if (idOS.value === "") {
             const OS = {
@@ -44,7 +45,7 @@ frmOS.addEventListener('submit', async (event) => {
                 pagOS: pagamentoOS.value,
                 staOS: statusOS.value,
                 idCli: idClient.value,
-                conOs: dataOS.value
+                conOs: dataConclusao.value
             }
             api.newOS(OS)
         } else {
@@ -59,6 +60,7 @@ function resetForm() {
     location.reload()
 }
 
+// Recebimento do pedido do main para resetar o formulario
 api.resetForm((args) => {
     resetForm()
 })
@@ -69,23 +71,28 @@ api.resetForm((args) => {
 const input = document.getElementById('inputSearchClient')
 const suggestionList = document.getElementById('viewListSuggestion')
 
+
 let nameClient = document.getElementById('inputNameClient')
 let phoneClient = document.getElementById('inputPhoneClient')
 
 let arrayClients = []
 
 input.addEventListener('input', () => {
-    const search = input.value.toLowerCase()
+    const search = input.value.toLowerCase()//captura o que foi digitado e converte tudo para minúsculo
+    suggestionList.innerHTML = ""
 
+    // Buscar os nomes dos clientes no banco
     api.searchClients()
 
+    // Listar os clientes 
     api.listClients((event, clients) => {
         const dataClients = JSON.parse(clients)
         arrayClients = dataClients
 
+        //Filtra os clientes cujo nome (c.nomeCliente) contém o texto digitado(search)
         const results = arrayClients.filter(c =>
             c.nomeCliente && c.nomeCliente.toLowerCase().includes(search)
-        ).slice(0, 6)
+        ).slice(0, 10)
 
         suggestionList.innerHTML = ""
 
@@ -102,8 +109,15 @@ input.addEventListener('input', () => {
                 input.value = ""
                 suggestionList.innerHTML = ""
             })
+
+            // adiciona os nomes(itens <li>) a lista <ul>
+            suggestionList.appendChild(item)
         })
     })
+})
+// setar o foco no campo de busca (validação de busca do cliente obrigatória)
+api.setSearch((args) => {
+    input.focus()
 })
 
 document.addEventListener('click', (event) => {
@@ -123,7 +137,9 @@ api.renderOS((event, dataOS) => {
     console.log(dataOS)
     const os = JSON.parse(dataOS)
 
+    // preencher os campos com os dados da OS
     idOS.value = os._id
+    // formatar data:
 
     const data = new Date(os.dataEntrada)
     const formatada = data.toLocaleString("pt-BR", {
@@ -136,14 +152,53 @@ api.renderOS((event, dataOS) => {
     })
 
     dateOS.value = formatada
+    idClient.value = os.idCliente
     //IdC.value = os.idCliente
-    descricaoOS.value = os.descricao
-    materialOS.value = os.material
-    dataOS.value = os.data
+    idClient.dispatchEvent(new Event('change'))
+    descricaoOS.value = os.problema
+    materialOS.value = os.pecas
+    dataConclusao.value = os.dataConclusao
     orcamentoOS.value = os.orcamento
     pagamentoOS.value = os.pagamento
-    statusOS.value = os.status
+    statusOS.value = os.statusOS
+    // desativar o botão adicionar
+    btnCreate.disabled = true
+    // ativar os botões editar e excluir
+    btnUpdate.disabled = false
+    btnDelete.disabled = false
+    // desativar o campo de busca do cliente (evitar inconcistencia de dados)
+    inputSearchClient.disabled = true
 })
+// Disparar ação de busca do nome e telefone do cliente quando o inputIdClient for preenchido (change - usado quando o campo input é desativado)
+idClient.addEventListener('change', () => {
+    if (idClient.value !== "") {
+        console.log(idClient.value)
+        api.searchIdClient(idClient.value)
+    }
+})
+
+// receber dados do cliente para preenchimento da OS
+api.renderIdClient((event, dataClient) => {
+    const dadosCliente = JSON.parse(dataClient)
+    // atribuir ao vetor os dados do cliente
+    arrayClient = dadosCliente
+    // extrair os dados do cliente
+    arrayClient.forEach((c) => {
+        nameClient.value = c.nomeCliente,
+            phoneClient.value = c.foneCliente
+    })
+
+})
+// ============================================================
+// == CRUD Delete =============================================
+
+function removeOS() {
+    console.log(idOS.value) // Passo 1 (receber do form o id da OS)
+    api.deleteOS(idOS.value) // Passo 2 (enviar o id da OS ao main)
+}
+
+// == Fim - CRUD Delete =======================================
+// ============================================================
 
 // ============================================================
 // == Imprimir OS ============================================= 

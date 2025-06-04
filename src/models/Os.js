@@ -15,17 +15,11 @@ const osSchema = new Schema({
     dataConclusao: {
         type: String,
     },
-    idCliente: {
+    idClient: {
         type: String,        
     },
     statusOS: {
         type: String
-    },
-    computador: {
-        type: String
-    },
-    serie: {
-        type: String        
     },
     problema: {
         type: String  
@@ -42,7 +36,7 @@ const osSchema = new Schema({
     pecas: {
         type: String 
     },
-    valor: {
+    orcamento: {
         type: String 
     },
     pagamento: {    

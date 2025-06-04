@@ -10,7 +10,10 @@ const clientModel = require('./src/models/Clientes.js');
 const carroModel = require('./src/models/Carro.js'); 
 const osModel = require('./src/models/Os.js');
 const { jsPDF } = require('jspdf');
+//require('jspdf-autotable') //aditivo do jsPDF
 const prompt = require('electron-prompt');
+//const os = require('os');
+
 
 
 let win;
@@ -113,7 +116,7 @@ ipcMain.on('new-os', async (event, OS) => {
       pecas: OS.matOS,              // material/peças usados
       dataConclusao: OS.conOs,
       dataEntrada: OS.datOS,        // data da OS
-      valor: OS.orcOS,              // orçamento
+      orcamento: OS.orcOS,              // orçamento
       pagamento: OS.pagOS,          // forma pagamento
       statusOS: OS.staOS,            // status da OS
 
@@ -193,8 +196,8 @@ const template = [
   {
     label: 'Relatórios', submenu: [
       { label: 'Clientes', click: () => relatorioClientes() },
-      { label: 'OS abertas' },
-      { label: 'OS concluídas' }
+      { label: 'OS abertas', click: () => relatorioOsAbertas() },
+      { label: 'OS concluídas', click: () => relatorioOsConcluidas() }
     ]
   },
   {
@@ -317,8 +320,155 @@ async function relatorioClientes() {
   }
 }
 
-// ==============================================FIM DE RELATORIOS DE CLIENTES==============================================
+// ==============================================FIM DE RELATORIOS DE CLIENTES============================================
 
+// ==========================================
+// == Relatorio da OS Aberta ================
+
+async function relatorioOsAbertas() {
+  try {
+
+    const clientes = await osModel.find({ statusOS: 'Aberta' }).sort({ orcamento: 1 })
+
+    const doc = new jsPDF('p', 'mm', 'a4')
+
+    const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logomartelo (2).png')
+    const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' })
+    doc.addImage(imageBase64, 'PNG', 20, 8) //(5mm, 8mm x,y)
+
+    doc.setFontSize(18)
+
+    doc.text("Relatório de Ordem de Serviços", 14, 45)//x,y (mm) 
+
+    const dataAtual = new Date().toLocaleDateString('pt-BR')
+    doc.setFontSize(12)
+    doc.text(`Data: ${dataAtual}`, 160, 10)
+
+    let y = 60
+    doc.text("ID do Cliente", 14, y)
+    doc.text("Orçamento", 70, y)
+    doc.text("Status", 120, y)
+    y += 5
+
+    doc.setLineWidth(0.5) // expessura da linha
+    doc.line(10, y, 200, y) // inicio e fim
+
+    y += 10 // espaçãmento da linha
+
+    clientes.forEach((c) => {
+
+      if (y > 280) {
+        doc.addPage()
+        y = 20
+        doc.text("ID do Cliente", 14, y)
+        doc.text("Orçamento", 70, y)
+        doc.text("Status", 120, y)
+        y += 5
+        doc.setLineWidth(0.5)
+        doc.line(10, y, 200, y)
+        y += 10
+      }
+
+      doc.text(c.id || "N/A", 14, y)
+      doc.text(c.orcamento || "N/A", 80, y)
+      doc.text(c.statusOS || "N/A", 120, y)
+      y += 10
+    })
+
+    const paginas = doc.internal.getNumberOfPages()
+    for (let i = 1; i <= paginas; i++) {
+      doc.setPage(i)
+      doc.setFontSize(10)
+      doc.text(`Página ${i} de ${paginas}`, 105, 290, { align: 'center' })
+    }
+
+    const tempDir = app.getPath('temp')
+    const filePath = path.join(tempDir, 'ordemservico.pdf')
+
+    doc.save(filePath)
+
+    shell.openPath(filePath)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// ==================== fim relatorio da os aberta ===============
+
+
+// ==========================================
+// == Relatorio da OS Concluida ================
+
+async function relatorioOsConcluidas() {
+  try {
+
+    const clientes = await osModel.find({ statusOS: 'Finalizada' }).sort({ orcamento: 1 })
+
+    const doc = new jsPDF('p', 'mm', 'a4')
+
+    const imagePath = path.join(__dirname, 'src', 'public', 'img', 'logomartelo (2).png')
+    const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' })
+    doc.addImage(imageBase64, 'PNG', 20, 8) //(5mm, 8mm x,y)
+
+    doc.setFontSize(18)
+
+    doc.text("Relatório de Ordem de Serviços", 14, 45)//x,y (mm) 
+
+    const dataAtual = new Date().toLocaleDateString('pt-BR')
+    doc.setFontSize(12)
+    doc.text(`Data: ${dataAtual}`, 160, 10)
+
+    let y = 60
+    doc.text("ID do Cliente", 14, y)
+    doc.text("Orçamento", 80, y)
+    doc.text("Status", 120, y)
+    y += 5
+
+    doc.setLineWidth(0.5) // expessura da linha
+    doc.line(10, y, 200, y) // inicio e fim
+
+    y += 10 // espaçãmento da linha
+
+    clientes.forEach((c) => {
+
+      if (y > 280) {
+        doc.addPage()
+        y = 20
+        doc.text("ID do Cliente", 14, y)
+        doc.text("Orçamento", 70, y)
+        doc.text("Status", 120, y)
+        y += 5
+        doc.setLineWidth(0.5)
+        doc.line(10, y, 200, y)
+        y += 10
+      }
+
+      doc.text(c.id || "N/A", 14, y)
+      doc.text(c.orcamento || "N/A", 70, y)
+      doc.text(c.statusOS || "N/A", 120, y)
+      y += 10
+    })
+
+    const paginas = doc.internal.getNumberOfPages()
+    for (let i = 1; i <= paginas; i++) {
+      doc.setPage(i)
+      doc.setFontSize(10)
+      doc.text(`Página ${i} de ${paginas}`, 105, 290, { align: 'center' })
+    }
+
+    const tempDir = app.getPath('temp')
+    const filePath = path.join(tempDir, 'ordemservico.pdf')
+
+    doc.save(filePath)
+
+    shell.openPath(filePath)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// ==========================================
+// == fim relatorio da OS concluida =============================
 
 // =========================================================================================================================
 // ==CRUD Read =============================
@@ -755,7 +905,7 @@ ipcMain.on('print-os', async (event) => {
                       console.log(dataOS) // teste importante
                       // extrair os dados do cliente de acordo com o idCliente vinculado a OS
                       const dataClient = await clientModel.find({
-                          _id: dataOS.idCliente
+                          _id: dataOS.idClient
                       })
                       console.log(dataClient)
                       // impressão (documento PDF) com os dados da OS, do cliente e termos do serviço (uso do jspdf)
@@ -832,10 +982,10 @@ ipcMain.on('print-os', async (event) => {
 
 async function printOS(osId) {
   try {
-      const dataOS = await osModel.findById(osId)
+      const dateOS = await osModel.findById(osId)
 
       const dataClient = await clientModel.find({
-          _id: dataOS.idCliente
+          _id: dateOS.idClient
       })
       console.log(dataClient)
       // impressão (documento PDF) com os dados da OS, do cliente e termos do serviço (uso do jspdf)
@@ -859,8 +1009,8 @@ async function printOS(osId) {
       })
 
       // Extração dos dados da OS                        
-      doc.text(String(dataOS.computador), 14, 85)
-      doc.text(String(dataOS.problema), 80, 85)
+      doc.text(String(dateOS.orcamento), 14, 85)
+      doc.text(String(dateOS.problema), 80, 85)
 
       // Texto do termo de serviço
       doc.setFontSize(10)
@@ -893,4 +1043,79 @@ O cliente autoriza a realização dos serviços técnicos descritos nesta ordem,
 }
 
 // Fim - Impressão de OS ======================================
+// ============================================================
+
+// ============================================================
+// == Excluir OS - CRUD Delete  ===============================
+
+ipcMain.on('delete-os', async (event, idOS) => {
+  console.log(idOS) // teste do passo 2 (recebimento do id)
+  try {
+      //importante - confirmar a exclusão
+      //osScreen é o nome da variável que representa a janela OS
+      const { response } = await dialog.showMessageBox(os, {
+          type: 'warning',
+          title: "Atenção!",
+          message: "Deseja excluir esta ordem de serviço?\nEsta ação não poderá ser desfeita.",
+          buttons: ['Cancelar', 'Excluir'] //[0, 1]
+      })
+      if (response === 1) {
+          //console.log("teste do if de excluir")
+          //Passo 3 - Excluir a OS
+          const delOS = await osModel.findByIdAndDelete(idOS)
+          event.reply('reset-form')
+      }
+  } catch (error) {
+      console.log(error)
+  }
+})
+
+// == Fim Excluir OS - CRUD Delete ============================
+// ============================================================
+
+// ============================================================
+// == Editar OS - CRUD Update =================================
+
+ipcMain.on('update-os', async (event, OS) => {
+  //importante! teste de recebimento dos dados da os (passo 2)
+  console.log(OS)
+  // Alterar os dados da OS no banco de dados MongoDB
+  try {
+      // criar uma nova de estrutura de dados usando a classe modelo. Atenção! Os atributos precisam ser idênticos ao modelo de dados OS.js e os valores são definidos pelo conteúdo do objeto os
+      const updateOS = await osModel.findByIdAndUpdate(
+          OS.id_OS,
+          {
+            idCliente: OS.idCliente_OS,   // id do cliente
+            problema: OS.desOS,           // descrição do problema
+            pecas: OS.matOS,              // material/peças usados
+            dataConclusao: OS.conOs,
+            dataEntrada: OS.datOS,        // data da OS
+            orcamento: OS.orcOS,              // orçamento
+            pagamento: OS.pagOS,          // forma pagamento
+            statusOS: OS.staOS
+          },
+          {
+              new: true
+          }
+      )
+      // Mensagem de confirmação
+      dialog.showMessageBox({
+          //customização
+          type: 'info',
+          title: "Aviso",
+          message: "Dados da OS alterados com sucesso",
+          buttons: ['OK']
+      }).then((result) => {
+          //ação ao pressionar o botão (result = 0)
+          if (result.response === 0) {
+              //enviar um pedido para o renderizador limpar os campos e resetar as configurações pré definidas (rótulo 'reset-form' do preload.js
+              event.reply('reset-form')
+          }
+      })
+  } catch (error) {
+      console.log(error)
+  }
+})
+
+// == Fim Editar OS - CRUD Update =============================
 // ============================================================
