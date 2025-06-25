@@ -7,10 +7,10 @@ Sistema desktop completo para oficinas, com controle de OS, cadastro de clientes
 Murillo Mendonça Mascarenha
 
 ## Pré-requisitos de instalação:
-Windows 10 ou superior
+Windows 10 ou superior;
 Ter o banco de dados MongoDB instalado
-Instalação do MongoDB:
-Acesse o site oficial: MongoDB
+## Instalação do MongoDB:
+Acesse o site oficial: 
 
 Baixe o MongoDB Community Server e instale com a opção de "Install MongoDB as a Service" ativada (instalação padrão).
 
