@@ -31,6 +31,26 @@ const createWindow = () => {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
   win.loadFile('./src/views/index.html');
 };
+
+
+function aboutWindow() {
+    nativeTheme.themeSource = 'dark'
+    const main = BrowserWindow.getFocusedWindow()
+    let about
+    if (main) {
+        about = new BrowserWindow({
+            width: 360,
+            height: 220,
+            autoHideMenuBar: true,
+            resizable: false,
+            minimizable: false,
+            parent: main,
+            modal: true
+        })
+    }
+    about.loadFile('./src/views/sobre.html')
+}
+
 // janela clientes
 let client
 function clientWindow() {
@@ -51,7 +71,7 @@ function clientWindow() {
     })
 
   }
-  client.loadFile('./src/views/cliente.html')
+  client.loadFile('./src/views/clientes.html')//
   client.center() //iniciar no centro da tela
 }
 
@@ -186,11 +206,21 @@ async function relatorioClientes() {
 const template = [
   {
     label: 'Cadastro', submenu: [
-      { label: 'Cadastro de Clientes', click: () => createChildWindow('clientes') },
-      { label: 'Cadastro de Veículos', click: () => createChildWindow('carros') },
-      { label: 'OS', click: () => createChildWindow('OS') },
+      { label: 'Cadastro de Clientes', 
+        //click: () => createChildWindow('clientes') 
+        click: () => clientWindow()//
+      },
+      { label: 'Cadastro de Veículos', 
+        click: () => createChildWindow('carros') 
+      },
+      { label: 'OS', 
+      click: () => createChildWindow('OS') 
+      },
       { type: 'separator' },
-      { label: 'Sair', click: () => app.quit(), accelerator: 'Alt+F4' }
+
+      { label: 'Sair',
+      click: () => app.quit(), 
+      accelerator: 'Alt+F4' }
     ]
   },
   {
@@ -210,8 +240,9 @@ const template = [
       { label: 'Ferramentas do Desenvolvedor', role: 'toggleDevTools' }
     ]
   },
-  { label: 'Ajuda', submenu: [{ label: 'Sobre', click: () => createChildWindow('sobre', 360, 200) }] }
+  { label: 'Ajuda', submenu: [{ label: 'Sobre', click: () => aboutWindow() }] }
 ];
+
 
 app.whenReady().then(() => {
   createWindow();
