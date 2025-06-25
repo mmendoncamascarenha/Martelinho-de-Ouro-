@@ -3,6 +3,12 @@
 
 # Martelinho-de-Ouro-
 Sistema desktop completo para oficinas, com controle de OS, cadastro de clientes e veículos, geração de relatórios em PDF e interface moderna, desenvolvido com Electron e MongoDB.
+
+### Tela Inicial
+![Tela Inicial](./public/img/telainicialprojeto.png)
+
+
+
 ## Autor
 Murillo Mendonça Mascarenha
 
