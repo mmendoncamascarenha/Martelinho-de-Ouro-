@@ -7,6 +7,17 @@ Sistema desktop completo para oficinas, com controle de OS, cadastro de clientes
 ### Tela Inicial
 ![Tela Inicial](./src/public/img/telainicialprojeto.png)
 
+### Cadastro de clientes
+![Cadastro de Clientes](./src/public/img/)
+
+### Ordem de serviço
+![Tela da Ordem de Serviço](./src/public/img/)
+
+### Relatório de clientes
+![Tela de relatório de Clientes](./src/public/img/)
+
+### Relatório OS Aberta
+![Tela de relatório de Os Aberta](./src/public/img/)
 
 
 ## Autor
