@@ -11,7 +11,7 @@ Sistema desktop completo para oficinas, com controle de OS, cadastro de clientes
 ![Cadastro de Clientes](./src/public/img/cadastroclientes.png)
 
 ### Ordem de serviço
-![Tela da Ordem de Serviço](./src/public/img/)
+![Tela da Ordem de Serviço](./src/public/img/cadastroos.png)
 
 ### Relatório de clientes
 ![Tela de relatório de Clientes](./src/public/img/relatoriodeclientes.png)
