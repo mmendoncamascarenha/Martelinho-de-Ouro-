@@ -5,7 +5,7 @@
 Sistema desktop completo para oficinas, com controle de OS, cadastro de clientes e veículos, geração de relatórios em PDF e interface moderna, desenvolvido com Electron e MongoDB.
 
 ### Tela Inicial
-![Tela Inicial](.blob/main/src/public/img/telainicialprojeto.png)
+![Tela Inicial](./blob/main/src/public/img/telainicialprojeto.png)
 
 
 
