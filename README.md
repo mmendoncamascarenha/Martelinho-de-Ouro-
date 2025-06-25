@@ -13,8 +13,8 @@ Sistema desktop completo para oficinas, com controle de OS, cadastro de clientes
 Murillo Mendonça Mascarenha
 
 ## Pré-requisitos de instalação:
-*Windows 10 ou superior;
-*Ter o banco de dados MongoDB instalado
+- Windows 10 ou superior
+- Ter o banco de dados MongoDB instalado
 ## Instalação do MongoDB:
 Acesse o site oficial: [![MongoDB](https://www.mongodb.com/assets/images/global/favicon.ico)](https://www.mongodb.com/try/download/community)
 
