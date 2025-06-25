@@ -16,8 +16,7 @@ Murillo Mendonça Mascarenha
 Windows 10 ou superior;
 Ter o banco de dados MongoDB instalado
 ## Instalação do MongoDB:
-Acesse o site oficial: [![MongoDB](https://www.mongodb.com/try/download/community)
-
+Acesse o site oficial: [![MongoDB](https://www.mongodb.com/assets/images/global/favicon.ico)](https://www.mongodb.com/try/download/community)
 
 
 Baixe o MongoDB Community Server e instale com a opção de "Install MongoDB as a Service" ativada (instalação padrão).
