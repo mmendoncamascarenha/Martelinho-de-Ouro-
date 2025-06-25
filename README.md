@@ -16,5 +16,5 @@ Baixe o MongoDB Community Server e instale com a opção de "Install MongoDB as 
 
 Após instalar, ele inicia automaticamente.
 
-Instalação do sistema Martelinho-de-Ouro-
+## Instalação do sistema Martelinho-de-Ouro-
 Em releases faça o download da última versão (.exe) disponibilizada e execute no computador.
