@@ -10,8 +10,8 @@ const mongoose = require('mongoose')
 // IP/link - autenticação (User e senha)
 // OBS: Atlas (obter via compass)
 // Para criar um banco de dados personalizado basta escolher um nome no final da String da url (ex: dbclientesouro)
-//const url = 'mongodb+srv://admin:123Senac@projetonode.4bgbm.mongodb.net/dbclientesouro'
-const url = 'mongodb+srv://admin:123Senac@projetonode.4eylp.mongodb.net/dbclientes'
+
+const url = 'mongodb://localhost:27017/'
 
 // Criar uma varivel de apoio para validação 
 
